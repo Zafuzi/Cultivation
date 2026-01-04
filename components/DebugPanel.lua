@@ -31,6 +31,9 @@ DebugPanel.resting:SetPoint("TOPLEFT", DebugPanel.hunger, "BOTTOMLEFT", 0, 0)
 DebugPanel.eating = DebugPanel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 DebugPanel.eating:SetPoint("TOPLEFT", DebugPanel.resting, "BOTTOMLEFT", 0, 0)
 
+DebugPanel.starving = DebugPanel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+DebugPanel.starving:SetPoint("TOPLEFT", DebugPanel.eating, "BOTTOMLEFT", 0, 0)
+
 DebugPanel:SetScript("OnShow", function(self)
 	PlaySound(808)
 end)
@@ -38,12 +41,26 @@ end)
 DebugPanel:SetScript("OnUpdate", function(self)
 	DebugPanel.playerName:SetText("Character: " .. PLAYER_STATE.name)
 	DebugPanel.playerLevel:SetText("Level: " .. PLAYER_STATE.level)
-	DebugPanel.health:SetText("Health: " .. floatToTwoString(PLAYER_STATE.health))
-	DebugPanel.speed:SetText("Speed: " .. floatToTwoString(PLAYER_STATE.speed))
+	DebugPanel.health:SetText("Health: " .. floatToTwoString(PLAYER_STATE.health, 0))
+	DebugPanel.speed:SetText("Speed: " .. floatToTwoString(PLAYER_STATE.speed, 2))
 
-	DebugPanel.hunger:SetText("Hunger: " .. floatToTwoString(HUNGER.current or 0) .. " (" .. PLAYER_STATE.activity .. " @" .. floatToTwoString(HUNGER.rate, 4) .. "x)")
+	DebugPanel.hunger:SetText("Hunger: " .. floatToTwoString(HUNGER.current, 3) .. " (" .. PLAYER_STATE.activity .. " @" .. floatToTwoString(HUNGER.rate, 3) .. "x)")
 	DebugPanel.resting:SetText("Resting: " .. tostring(PLAYER_STATE.resting))
 	DebugPanel.eating:SetText("Eating: " .. tostring(PLAYER_STATE.eating))
+
+	local tts = ((100 - HUNGER.current) / 100) * (TIME_TO_STARVE_IN_HOURS - (TIME_TO_STARVE_IN_HOURS * HUNGER.rate))
+
+	local tts_hours = 0
+	local tts_min = 0
+	local tts_sec = 0
+	local tts_ms = 0
+
+	tts_hours, tts_min = math.modf(tts)
+	tts_min, tts_sec = math.modf(tts_min * 60)
+	tts_sec, tts_ms = math.modf(tts_sec * 60)
+
+	--DebugPanel.starving:SetText("Starving in: " .. tts)
+	DebugPanel.starving:SetText("TTS RAW: " .. floatToTwoString(tts) .. " |> Starving in: " .. tts_hours .. "h " .. tts_min .. "m " .. tts_sec .. "s ")
 end)
 
 DebugPanel:SetScript("OnEvent", function(self, event, arg)

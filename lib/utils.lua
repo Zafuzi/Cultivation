@@ -41,7 +41,11 @@ function GetMovementState()
 
 	if IsMounted() then
 		if speed > 0 then
-			return IsFlying() and "flying" or "mounted"
+			if speed <= 3 then
+				return "walking"
+			else
+				return IsFlying() and "flying" or "mounted"
+			end
 		else
 			return "idle"
 		end
