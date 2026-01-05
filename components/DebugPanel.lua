@@ -38,17 +38,22 @@ DebugPanel:SetScript("OnShow", function(self)
 	PlaySound(808)
 end)
 
-DebugPanel:SetScript("OnUpdate", function(self)
-	DebugPanel.playerName:SetText("Character: " .. PLAYER_STATE.name)
-	DebugPanel.playerLevel:SetText("Level: " .. PLAYER_STATE.level)
-	DebugPanel.health:SetText("Health: " .. floatToTwoString(PLAYER_STATE.health, 0))
-	DebugPanel.speed:SetText("Speed: " .. floatToTwoString(PLAYER_STATE.speed, 2))
+DebugPanel:SetScript("OnUpdate", function(self, elapsed)
 
-	DebugPanel.hunger:SetText("Hunger: " .. floatToTwoString(HUNGER.current, 3) .. " (" .. PLAYER_STATE.activity .. " @" .. floatToTwoString(HUNGER.rate * 100, 1) .. "x)")
-	DebugPanel.resting:SetText("Resting: " .. tostring(PLAYER_STATE.resting))
-	DebugPanel.eating:SetText("Eating: " .. tostring(PLAYER_STATE.eating))
+	if not Addon.hungerCache then
+		return
+	end
 
-	local tts = ((100 - HUNGER.current) / 100) * (TIME_TO_STARVE_IN_HOURS)
+	DebugPanel.playerName:SetText("Character: " .. Addon.playerCache.name)
+	DebugPanel.playerLevel:SetText("Level: " .. Addon.playerCache.level)
+	DebugPanel.health:SetText("Health: " .. floatToTwoString(Addon.playerCache.health, 0))
+	DebugPanel.speed:SetText("Speed: " .. floatToTwoString(Addon.playerCache.speed, 2))
+
+	DebugPanel.hunger:SetText("Hunger: " .. floatToTwoString(Addon.hungerCache.current, 3) .. " (" .. Addon.playerCache.activity .. " @" .. floatToTwoString(Addon.hungerCache.rate * 100, 1) .. "x)")
+	DebugPanel.resting:SetText("Resting: " .. tostring(Addon.playerCache.resting))
+	DebugPanel.eating:SetText("Eating: " .. tostring(Addon.playerCache.eating))
+
+	local tts = ((100 - Addon.hungerCache.current) / 100) * (Addon.hungerCache.timeToStarveInHours or 1)
 
 	local tts_hours = 0
 	local tts_min = 0

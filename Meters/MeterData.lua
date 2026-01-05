@@ -1,2 +1,0 @@
-PLAYER_STATE = {}
-HUNGER = {}

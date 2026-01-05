@@ -4,9 +4,24 @@ function floatToTwoString(x, precision)
 	return string.format(fmtStr, x)
 end
 
---function clamp(value, min, max)
---	return math.max(min, math.min(max, value))
---end
+function IsPlayerEating()
+	-- Fast paths
+	for auraName in pairs(EATING_AURAS) do
+		if AuraByName(auraName) then
+			return true
+		end
+	end
+
+	-- Full scan
+	return AnyHelpfulAuraMatches(function(aura)
+		local name = aura.name
+		if not name then
+			return false
+		end
+		return EATING_AURAS[name] == true
+	end)
+end
+
 ------------------------------------------------------------
 -- Retail-safe aura helpers (NO UnitBuff)
 ------------------------------------------------------------
@@ -80,6 +95,72 @@ function GetPlayerProp(prop)
 			return forwardSpeed or 0
 		else
 			return GetUnitSpeed("player") or 0
+		end
+	end
+end
+
+function Dump(o, prefix)
+	prefix = prefix or ""
+	if type(o) == 'table' then
+		local s = "\n  " .. prefix
+
+		for k, v in pairs(o) do
+			if type(k) ~= 'number' then
+				--k = '"' .. k .. '"'
+			end
+			s = s .. "" .. k .. ": " .. Dump(v, "  ") .. " "
+
+		end
+
+		return s .. "\n"
+	else
+		return tostring(o)
+	end
+end
+
+-- Debug (optimized with lookup tables)
+function Debug(msg, category)
+	category = category or "general"
+
+	local settingKey = DEBUG_SETTINGS[category]
+	local isCategoryOn = GetSetting(settingKey)
+
+	if isCategoryOn then
+		local color = DEBUG_COLORS[category] or COLORS.ADDON
+		print(color .. Addon.name .. ":|r " .. msg)
+	else
+		print("skipping: " .. tostring(category))
+	end
+end
+
+-- Callback System
+function RegisterCallback(eventOrFunc, callback)
+	if type(eventOrFunc) == "function" then
+		if not Addon.callbacks["LEGACY"] then
+			Addon.callbacks["LEGACY"] = {}
+		end
+		table.insert(Addon.callbacks["LEGACY"], eventOrFunc)
+		return true
+	end
+	if type(callback) ~= "function" then
+		return false
+	end
+	if not Addon.callbacks[eventOrFunc] then
+		Addon.callbacks[eventOrFunc] = {}
+	end
+	table.insert(Addon.callbacks[eventOrFunc], callback)
+	return true
+end
+
+function FireCallbacks(event, ...)
+	if Addon.callbacks[event] then
+		for _, callback in ipairs(Addon.callbacks[event]) do
+			pcall(callback, ...)
+		end
+	end
+	if event == "FIRE_STATE_CHANGED" and Addon.callbacks["LEGACY"] then
+		for _, callback in ipairs(Addon.callbacks["LEGACY"]) do
+			pcall(callback, Addon.isNearFire, Addon.inCombat)
 		end
 	end
 end

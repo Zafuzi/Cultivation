@@ -5,16 +5,16 @@
 ## Version: 0.0.1
 ## X-Curse-Project-ID: 1419520
 ## SavedVariables:
-## SavedVariablesPerCharacter:
+## SavedVariablesPerCharacter: CozierCampsDB, CozierCampsCharDB
 
 # LIB
-CozierCamps.lua
-lib/gui.lua
+lib/globals.lua
 lib/utils.lua
+lib/db.lua
+lib/gui.lua
 # END LIB
 
 # METERS
-Meters/MeterData.lua
 Meters/HungerMeter.lua
 # END METERS
 
@@ -23,5 +23,5 @@ components/DebugPanel.lua
 # END MODALS
 
 # KEEP THIS LAST
-init.lua
+CozierCamps.lua
 # KEEP THIS LAST
