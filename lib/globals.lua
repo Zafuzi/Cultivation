@@ -33,8 +33,8 @@ DEBUG_COLORS = {
 -- Addon defaults
 DEFAULT_SETTINGS = {
 	debug_general = true,
-	debug_database = true,
-	debug_hunger = true,
+	debug_database = false,
+	debug_hunger = false,
 }
 
 -- Initialize character-specific saved variables
@@ -51,71 +51,34 @@ EATING_AURAS = {
 }
 
 -- Meter configuration
-METER_WIDTH = 150
-METER_HEIGHT = 16
+METER_WIDTH = 300
+METER_HEIGHT = 32
+METER_FONT_SIZE = METER_HEIGHT / 2
 METER_SPACING = 4
-METER_PADDING = 2
-ICON_SIZE = 14
+METER_PADDING = 3
+ICON_SIZE = METER_HEIGHT - 2
 
--- Available bar textures
-BAR_TEXTURES = {
-	"Interface\\TargetingFrame\\UI-StatusBar", -- Blizzard default
-	"Interface\\RaidFrame\\Raid-Bar-Hp-Fill", -- Blizzard Raid
-	"Interface\\AddOns\\CozierCamps\\assets\\UI-StatusBar", -- Smooth (custom if exists, fallback to Blizzard)
-	"Interface\\Buttons\\WHITE8x8", -- Flat/Solid
-	"Interface\\PaperDollInfoFrame\\UI-Character-Skills-Bar", -- Gloss
-	"Interface\\TARGETINGFRAME\\UI-TargetingFrame-BarFill", -- Minimalist
-	"Interface\\Tooltips\\UI-Tooltip-Background", -- Otravi-like
-	"Interface\\RaidFrame\\Raid-Bar-Resource-Fill", -- Striped
-	"Interface\\Buttons\\WHITE8x8" -- Solid
+TEXTURES = {
+	default = "Interface\\TargetingFrame\\UI-StatusBar",
+	raid = "Interface\\RaidFrame\\Raid-Bar-Hp-Fill", -- Blizzard Raid
+	smooth = "Interface\\AddOns\\CozierCamps\\assets\\UI-StatusBar", -- Smooth (custom if exists, fallback to Blizzard)
+	flat = "Interface\\Buttons\\WHITE8x8", -- Flat/Solid
+	gloss = "Interface\\PaperDollInfoFrame\\UI-Character-Skills-Bar", -- Gloss
+	minimal = "Interface\\TARGETINGFRAME\\UI-TargetingFrame-BarFill", -- Minimalist
+	tooltip = "Interface\\Tooltips\\UI-Tooltip-Background", -- Otravi-like
+	striped = "Interface\\RaidFrame\\Raid-Bar-Resource-Fill", -- Striped
 }
 
--- Available bar fonts (index 1 = inherit/default, no override)
-BAR_FONTS = {
-	{ name = "Default", path = nil },
-	{ name = "Friz Quadrata", path = "Fonts\\FRIZQT__.TTF" },
-	{ name = "Arial Narrow", path = "Fonts\\ARIALN.TTF" },
-	{ name = "Skurri", path = "Fonts\\skurri.TTF" },
-	{ name = "Morpheus", path = "Fonts\\MORPHEUS.TTF" },
-	{ name = "2002", path = "Fonts\\2002.TTF" },
-	{ name = "2002 Bold", path = "Fonts\\2002B.TTF" },
-	{ name = "Express Way", path = "Fonts\\EXPRESSWAY.TTF" },
-	{ name = "Nimrod MT", path = "Fonts\\NIM_____.TTF" }
-}
-
--- Available bar fonts (index 1 = inherit/default, no override)
 FONTS = {
-	Friz = "Fonts\\FRIZQT__.TTF"
-	--[[
-	{
-		name = "Arial Narrow",
-		path = "Fonts\\ARIALN.TTF"
-	}, -- Clean narrow
-	{
-		name = "Skurri",
-		path = "Fonts\\skurri.TTF"
-	}, -- Stylized
-	{
-		name = "Morpheus",
-		path = "Fonts\\MORPHEUS.TTF"
-	}, -- Fantasy
-	{
-		name = "2002",
-		path = "Fonts\\2002.TTF"
-	}, -- Bold
-	{
-		name = "2002 Bold",
-		path = "Fonts\\2002B.TTF"
-	}, -- Extra bold
-	{
-		name = "Express Way",
-		path = "Fonts\\EXPRESSWAY.TTF"
-	}, -- Modern
-	{
-		name = "Nimrod MT",
-		path = "Fonts\\NIM_____.TTF"
-	} -- Serif
-	--]]
+	Default = nil,
+	Friz = "Fonts\\FRIZQT__.TTF",
+	Arial = "Fonts\\ARIALN.TTF",
+	Skurri = "Fonts\\skurri.TTF",
+	Morpheus = "Fonts\\MORPHEUS.TTF",
+	TwoThousand = "Fonts\\2002.TTF",
+	TwoThousandBold = "Fonts\\2002B.TTF",
+	ExpressWay = "Fonts\\EXPRESSWAY.TTF",
+	NimrodMT = "Fonts\\NIM_____.TTF",
 }
 
 Addon = {

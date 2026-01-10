@@ -9,6 +9,7 @@ local config = {
 
 local padding = 16
 DebugPanel = OpenModal(config.name, config.width, config.height)
+DebugPanel:Hide()
 DebugPanel:RegisterEvent("PLAYER_ENTERING_WORLD")
 
 -- Style scrollbar
@@ -93,12 +94,6 @@ DebugPanel:SetScript("OnUpdate", function(self, elapsed)
 	end
 
 	body:SetText(bodyHTML .. bodyContent .. bodyEND)
-end)
-
-DebugPanel:SetScript("OnEvent", function(self, event, arg)
-	if event == "PLAYER_ENTERING_WORLD" then
-		DebugPanel:Show()
-	end
 end)
 
 DebugPanel.debug_hunger = function()

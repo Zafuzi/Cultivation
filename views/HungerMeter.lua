@@ -1,6 +1,5 @@
 local hungerIcon = "Interface\\AddOns\\CozierCamps\\assets\\hungericon.blp"
-local hungerMeter = CreateMeter("Hunger", UIParent, hungerIcon, false)
-hungerMeter:SetScale(2.0)
+local hungerMeter = CreateMeter("Hunger", UIParent, hungerIcon, COLORS.HUNGER)
 hungerMeter:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, 0)
 hungerMeter:Show()
 hungerMeter:SetScript("OnUpdate", function(self, elapsed)
@@ -19,7 +18,7 @@ function UpdateHungerMeter(elapsed)
 	local hunger = Addon.hungerCache.current or 0
 
 	-- Smooth the display value to prevent flickering from exhaustion-scaled calculations
-	local targetDisplay = 100 - hunger
+	local targetDisplay = hunger
 	if smoothedHungerDisplay == nil then
 		smoothedHungerDisplay = targetDisplay
 	else
@@ -28,6 +27,18 @@ function UpdateHungerMeter(elapsed)
 		smoothedHungerDisplay = smoothedHungerDisplay + diff * math.min(1, HUNGER_DISPLAY_LERP_SPEED * elapsed)
 	end
 	local displayValue = smoothedHungerDisplay
+
+	--local tts = ((100 - Addon.hungerCache.current) / 100) * (Addon.hungerCache.timeToStarveInHours or 1)
+
+	--local tts_hours = 0
+	--local tts_min = 0
+	--local tts_sec = 0
+	--local tts_ms = 0
+
+	--tts_hours, tts_min = math.modf(tts)
+	--tts_min, tts_sec = math.modf(tts_min * 60)
+	--tts_sec, tts_ms = math.modf(tts_sec * 60)
+
 
 	-- Update bar value (inverted: full bar = 0% hunger, empty bar = 100% hunger)
 	hungerMeter.bar:SetValue(displayValue)

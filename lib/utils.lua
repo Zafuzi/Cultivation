@@ -123,8 +123,6 @@ function Debug(msg, category)
 	if isCategoryOn then
 		local color = DEBUG_COLORS[category] or DEBUG_COLORS.ADDON
 		print(color .. Addon.name .. ":|r " .. msg)
-	else
-		print("skipping: " .. tostring(category))
 	end
 end
 
@@ -160,18 +158,26 @@ function FireCallbacks(event, ...)
 	end
 end
 
--- Get the current bar texture path
-function GetBarTexture()
-	local textureIndex = GetSetting("meterBarTexture") or 1
-	return BAR_TEXTURES[textureIndex] or BAR_TEXTURES[1]
+function GetTexture(texture)
+	local textureIndex = texture or GetSetting("meterBarTexture") or"default"
+	return TEXTURES[textureIndex]
 end
 
--- Get the current font path (nil means use default font object)
-function GetGeneralFont()
-	local fontIndex = GetSetting("generalFont") or 1
-	local fontData = BAR_FONTS[fontIndex]
-	if fontData and fontData.path then
-		return fontData.path
-	end
-	return nil -- Use default
+function GetFont(fontName)
+	local fontIndex = fontName or GetSetting("generalFont") or "Default"
+	return FONTS[fontIndex]
+end
+
+function hex_to_rgb_normalized(hex)
+	-- Remove the # prefix if present
+	hex = hex:gsub("#", "")
+
+	-- Remove |cff prefix if present
+	hex = hex:gsub("|cff", "")
+
+	-- Parse the hex values for red, green, and blue
+	local r, g, b = tonumber("0x" .. hex:sub(1, 2)), tonumber("0x" .. hex:sub(3, 4)), tonumber("0x" .. hex:sub(5, 6))
+
+	-- Normalize to range [0, 1]
+	return {r / 255, g / 255, b / 255}
 end
