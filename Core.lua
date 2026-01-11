@@ -35,7 +35,7 @@ end)
 f:SetPropagateKeyboardInput(true)
 
 local t = 0
-local delay = 1 / 30
+local delay = 1 / 100
 function UpdateAddon(elapsed)
 	Addon.playerCache.name = GetPlayerProp("name")
 	Addon.playerCache.level = GetPlayerProp("level")
