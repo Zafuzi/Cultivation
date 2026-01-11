@@ -1,9 +1,9 @@
---[[ KEEP AT TOP JUST CUS I LIKE IT HERE ]]--
+--[[ KEEP AT TOP JUST CUS I LIKE IT HERE ]] --
 -- TODO: these need to be split into more files to make globals easier to manage
 -- i.e. _globals/colors.lua, _globals/icons.lua, etc...
---[[ Addon defaults ]]--
+--[[ Addon defaults ]] --
 Addon = {
-	version = "0.0.1",
+	version = "0.0.2",
 	name = "Cultivation",
 
 	isLoaded = false,
@@ -48,7 +48,7 @@ DEFAULT_CHAR_SETTINGS = {
 	thirst_rate = 0,
 	thirst_timeToDehydrationInHours = 1 / 3,
 }
---[[ END DEFAULTS ]]--
+--[[ END DEFAULTS ]] --
 
 -- Shared constants for colors (reduces string allocations)
 COLORS = {
@@ -92,12 +92,12 @@ ICON_SIZE = METER_FONT_SIZE + METER_SPACING
 
 TEXTURES = {
 	default = "Interface\\TargetingFrame\\UI-StatusBar",
-	raid = "Interface\\RaidFrame\\Raid-Bar-Hp-Fill", -- Blizzard Raid
-	flat = "Interface\\Buttons\\WHITE8x8", -- Flat/Solid
+	raid = "Interface\\RaidFrame\\Raid-Bar-Hp-Fill",               -- Blizzard Raid
+	flat = "Interface\\Buttons\\WHITE8x8",                         -- Flat/Solid
 	gloss = "Interface\\PaperDollInfoFrame\\UI-Character-Skills-Bar", -- Gloss
 	minimal = "Interface\\TARGETINGFRAME\\UI-TargetingFrame-BarFill", -- Minimalist
-	tooltip = "Interface\\Tooltips\\UI-Tooltip-Background", -- Otravi-like
-	striped = "Interface\\RaidFrame\\Raid-Bar-Resource-Fill", -- Striped
+	tooltip = "Interface\\Tooltips\\UI-Tooltip-Background",        -- Otravi-like
+	striped = "Interface\\RaidFrame\\Raid-Bar-Resource-Fill",      -- Striped
 }
 
 FONTS = {
