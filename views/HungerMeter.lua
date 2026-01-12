@@ -22,4 +22,6 @@ function UpdateHungerMeter(elapsed)
 
 	-- Update bar value (inverted: full bar = 0% hunger, empty bar = 100% hunger)
 	HungerMeter.bar:SetValue(displayValue)
+
+	HungerMeter.percent:SetText(Dump(HungerMeter.bar:GetValue()) .. "%")
 end

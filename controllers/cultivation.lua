@@ -57,7 +57,7 @@ function GetCultivationRate()
 			if Addon.playerCache.camping then
 				rate = 4
 			else
-				rate = 1
+				rate = 2
 			end
 		end
 	end
@@ -66,18 +66,22 @@ function GetCultivationRate()
 		rate = 3
 	end
 
+	if not rate then
+		rate = 1
+	end
+
 	if Addon.playerCache.resting then
 		-- 10% boost when resting
 		rate = rate * 1.1
 	end
 
-
-	if not rate then
-		return 1
-	end
-
 	-- campfire adds a small 10% boost
 	if Addon.playerCache.camping then
+		rate = rate * 1.1
+	end
+
+	-- 10% boost while traveling
+	if Addon.playerCache.onVehicle then
 		rate = rate * 1.1
 	end
 
@@ -118,4 +122,5 @@ function UpdatePlayerCultivation(elapsed)
 	end
 
 	SetCharSetting("cultivation_current", cultivation)
+	-- SetCharSetting("gamma", Clamp((3 * cultivation / milestone_value), 1, 3))
 end

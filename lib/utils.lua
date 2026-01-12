@@ -243,7 +243,7 @@ function indexOf(array, value)
 end
 
 function RateAfterCultivation(rate)
-	return CultivationMultipliers[GetCurrentMilestone()] / (60 * rate)
+	return CultivationMultipliers[GetCurrentMilestone()] / (60 * rate + UPDATE_DELAY)
 end
 
 function Cultivate(turnOn)

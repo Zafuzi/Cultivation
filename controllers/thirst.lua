@@ -5,6 +5,7 @@ function UpdatePlayerThirst(elapsed)
 
 	local thirst = Clamp(Addon.thirstCache.current + rate * elapsed, 0, 100)
 	SetCharSetting("thirst_current", thirst)
+	SetCharSetting("contrast", Clamp(50 - (50 * thirst / 100), 0, 50))
 end
 
 --- @param elapsed number the amount of time elapsed since last frame

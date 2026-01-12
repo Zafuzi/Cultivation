@@ -57,6 +57,17 @@ function UpdateCultivationMeter(elapsed)
 
 	-- Apply text based on hideVialText setting
 	CultivationMeter.name:SetText("Cultivation")
+
+	if CultivationMeter.icon then
+		local rot = GetCultivationRate()
+		local scale = METER_ICON_SIZE * Clamp(0.8 + (cultivation / milestone_value * multiplier), 0.8, 1.2)
+		Debug(CultivationMeter.icon_rotation)
+		CultivationMeter.icon_rotation = (CultivationMeter.icon_rotation or 0) - rot
+		CultivationMeter.icon:SetRotation(math.rad(CultivationMeter.icon_rotation))
+		CultivationMeter.icon:SetSize(scale, scale)
+	end
+
+	CultivationMeter.percent:SetText(Dump(CultivationMeter.bar:GetValue()) .. "%")
 end
 
 function SetupCultivationTooltip(self)

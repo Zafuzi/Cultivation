@@ -1,10 +1,11 @@
 function UpdatePlayerHunger(elapsed)
 	-- load into caches
 	local rate = GetHungerRate()
-	SetCharSetting("hunger_rate", rate)
-
 	local hunger = Clamp(Addon.hungerCache.current + rate * elapsed, 0, 100)
+
+	SetCharSetting("hunger_rate", rate)
 	SetCharSetting("hunger_current", hunger)
+	SetCharSetting("brightness", Clamp(50 - (50 * hunger / 100), 0, 50))
 end
 
 --- @param elapsed number the amount of time elapsed since last frame

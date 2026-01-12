@@ -35,7 +35,7 @@ end)
 f:SetPropagateKeyboardInput(true)
 
 local t = 0
-local delay = 1 / 100
+UPDATE_DELAY = 1 / 100
 function UpdateAddon(elapsed)
 	Addon.playerCache.name = GetPlayerProp("name")
 	Addon.playerCache.level = GetPlayerProp("level")
@@ -48,6 +48,12 @@ function UpdateAddon(elapsed)
 	Addon.playerCache.cultivating = IsPlayerCultivating()
 	Addon.playerCache.camping = IsPlayerCamping()
 	Addon.playerCache.onVehicle = GetPlayerProp("using_vehicle")
+
+	Addon.settingsCache = {
+		brightness = GetCharSetting("brightness"),
+		contrast = GetCharSetting("contrast"),
+		gamma = GetCharSetting("gamma")
+	}
 
 	Addon.hungerCache = {
 		current = GetCharSetting("hunger_current"),
@@ -76,8 +82,13 @@ function UpdateAddon(elapsed)
 end
 
 f:SetScript("OnUpdate", function(self, elapsed)
-	if Addon.isLoaded and t >= delay then
+	if Addon.isLoaded and t >= UPDATE_DELAY then
 		UpdateAddon(elapsed)
+		-- update CVars
+		SetCVar("RenderScale", Addon.settingsCache.renderScale)
+		SetCVar("Brightness", Addon.settingsCache.brightness)
+		SetCVar("Contrast", Addon.settingsCache.contrast)
+		SetCVar("Gamma", Addon.settingsCache.gamma)
 		t = 0
 	end
 
@@ -113,7 +124,7 @@ SlashCmdList["CULTIVATION"] = function(msg)
 	end
 
 	if command == "dbg" then
-		if value then
+		if value ~= nil then
 			local key = "debug_" .. tostring(value)
 			local isOn = not GetSetting(key)
 			SetSetting(key, isOn)

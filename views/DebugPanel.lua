@@ -1,7 +1,7 @@
 local config = {
 	name = "DebugPanel",
 	width = 400,
-	height = 300,
+	height = 100,
 	color = GUI_COLORS.headerColor,
 	backgroundColor = GUI_COLORS.cardBg,
 	borderColor = GUI_COLORS.cardBorder,
@@ -9,8 +9,14 @@ local config = {
 
 local padding = 16
 DebugPanel = OpenModal(config.name, config.width, config.height, UIParent, { isScrollable = true })
-DebugPanel:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 10, -10)
+DebugPanel:SetPoint("TOP", UIParent, "TOP", 0, 0)
+DebugPanel:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
 DebugPanel:RegisterEvent("PLAYER_ENTERING_WORLD")
+DebugPanel:SetScript("OnMouseDown", function(self, event, args)
+	if event == "RightButton" then
+		ReloadUI {}
+	end
+end)
 DebugPanel:SetIgnoreParentAlpha(true)
 
 -- Style scrollbar
@@ -83,20 +89,27 @@ DebugPanel:SetScript("OnUpdate", function(self, elapsed)
 	self:debug_thirst()
 	self:debug_cultivation()
 	self:debug_player()
+	self:debug_settings()
 	self:debug_database()
 
 	body:SetText(bodyHTML .. bodyContent .. bodyEND)
 end)
 
+DebugPanel.debug_settings = function()
+	if GetSetting("debug_settings") then
+		renderTable("SettingsCache", Addon.settingsCache, COLORS.TABLE)
+	end
+end
+
 DebugPanel.debug_player = function()
 	if GetSetting("debug_player") then
-		renderTable("PlayerCache", Addon.playerCache, COLORS.WHITE)
+		renderTable("PlayerCache", Addon.playerCache, COLORS.TABLE)
 	end
 end
 
 DebugPanel.debug_database = function()
 	if GetSetting("debug_database") then
-		renderTable("Settings", Addon.DB, COLORS.EXHAUSTION)
+		renderTable("Settings", Addon.DB, COLORS.TABLE)
 	end
 end
 

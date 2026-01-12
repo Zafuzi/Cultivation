@@ -23,4 +23,5 @@ function UpdateThirstMeter(elapsed)
 
 	-- Update bar value (inverted: full bar = 0% thirst, empty bar = 100% thirst)
 	ThirstMeter.bar:SetValue(displayValue)
+	ThirstMeter.percent:SetText(Dump(ThirstMeter.bar:GetValue()) .. "%")
 end

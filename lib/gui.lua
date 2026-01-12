@@ -24,7 +24,7 @@ GUI_COLORS = {
 --- @param width number
 --- @param height number
 --- @param parent any
---- @param options {isScrollable:boolean, isMovable:boolean, isDismissable:boolean, hasTitle: boolean}
+--- @param options {isScrollable:boolean, isMovable:boolean, isDismissable:boolean, hasTitle: boolean, hasBorder: boolean, hasBackdrop: boolean}
 function OpenModal(name, width, height, parent, options)
 	name = name or "Modal"
 	name = "Cultivation - " .. name
@@ -34,18 +34,27 @@ function OpenModal(name, width, height, parent, options)
 	local isMovable = options.isMovable or false
 	local isDismissable = options.isDismissable or false
 	local hasTitle = options.hasTitle or false
+	local hasBorder = options.hasBorder or false
+	local hasBackdrop = options.hasBackdrop or false
 
 	local PFrame = CreateFrame("Frame", name, parent, "BackdropTemplate")
 
 	PFrame:SetSize(width or 100, height or 100)
 	PFrame:SetPoint("CENTER", parent, "CENTER", 0, 0)
-	PFrame:SetBackdrop({
-		bgFile = "Interface\\Buttons\\WHITE8X8",
-		edgeFile = "Interface\\Buttons\\WHITE8X8",
-		edgeSize = 2
-	})
+	local edgeSize
+	if hasBackdrop then
+		PFrame:SetBackdrop({
+			bgFile = "Interface\\Buttons\\WHITE8X8",
+			edgeFile = "Interface\\Buttons\\WHITE8X8",
+			edgeSize = edgeSize
+		})
+	end
 	PFrame:SetBackdropColor(0.06, 0.06, 0.08, 0.3)
-	PFrame:SetBackdropBorderColor(0.12, 0.12, 0.14, 1)
+	if not hasBorder then
+		PFrame:SetBackdropBorderColor(0.12, 0.12, 0.14, 0)
+	else
+		PFrame:SetBackdropBorderColor(0.12, 0.12, 0.14, 1)
+	end
 	if isMovable then
 		PFrame:SetMovable(true)
 		PFrame:RegisterForDrag("LeftButton")
@@ -125,16 +134,19 @@ function CreateMeter(name, parent, iconPath, color)
 	meter:SetPropagateMouseMotion(true)
 	meter:SetPropagateMouseClicks(true)
 
+	local edgeSize = 0
+	local inset = 2
+	local texture = TEXTURES.flat
 	-- Background with shadow effect
 	meter:SetBackdrop({
-		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-		edgeSize = 8,
+		bgFile = texture,
+		edgeFile = nil,
+		edgeSize = 0,
 		insets = {
-			left = 2,
-			right = 2,
-			top = 2,
-			bottom = 2
+			left = inset,
+			right = inset,
+			top = inset,
+			bottom = inset
 		}
 	})
 	meter:SetBackdropColor(0.1, 0.1, 0.1, 0.8)
@@ -143,9 +155,9 @@ function CreateMeter(name, parent, iconPath, color)
 	-- Status bar (lower frame level so icon/text appear above)
 	meter.bar = CreateFrame("StatusBar", nil, meter)
 	meter.bar:SetFrameLevel(meter:GetFrameLevel()) -- Same level as parent, textures will be below OVERLAY
-	meter.bar:SetPoint("TOPLEFT", METER_PADDING, -METER_PADDING)
-	meter.bar:SetPoint("BOTTOMRIGHT", -METER_PADDING, METER_PADDING)
-	meter.bar:SetStatusBarTexture(GetTexture("tooltip"))
+	meter.bar:SetPoint("TOPLEFT", inset, -inset)
+	meter.bar:SetPoint("BOTTOMRIGHT", -inset, inset)
+	meter.bar:SetStatusBarTexture(texture)
 	meter.bar:SetMinMaxValues(0, 100)
 	meter.bar:SetValue(0)
 	meter.bar:EnableMouse(false)
@@ -154,8 +166,9 @@ function CreateMeter(name, parent, iconPath, color)
 	-- Created on meter frame with high draw layer to ensure visibility
 	if iconPath then
 		meter.icon = meter:CreateTexture(nil, "OVERLAY", nil, 7) -- Sub-layer 7 for highest priority
-		meter.icon:SetSize(ICON_SIZE, ICON_SIZE)
-		meter.icon:SetPoint("LEFT", meter.bar, "LEFT", 2, 0)
+		meter.icon_rotation = 0
+		meter.icon:SetSize(METER_ICON_SIZE, METER_ICON_SIZE)
+		meter.icon:SetPoint("LEFT", meter.bar, "LEFT", inset + METER_PADDING, inset - METER_PADDING / 2)
 		meter.icon:SetTexture(iconPath)
 		meter.icon:EnableMouse(false)
 	end
@@ -163,7 +176,7 @@ function CreateMeter(name, parent, iconPath, color)
 	local fontPath = GetFont("Arial") or FONTS.Arial
 
 	meter.name = meter:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-	meter.name:SetPoint("LEFT", meter.icon, "RIGHT", METER_SPACING, 0)
+	meter.name:SetPoint("LEFT", meter.icon, "RIGHT", METER_PADDING, 0)
 	meter.name:SetText(name)
 	meter.name:EnableMouse(false)
 
@@ -172,8 +185,8 @@ function CreateMeter(name, parent, iconPath, color)
 
 	-- Percentage text (no label needed since icon identifies the bar)
 	meter.percent = meter:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-	meter.percent:SetPoint("RIGHT", meter.bar, "RIGHT", -4, 0)
-	meter.percent:SetText("")
+	meter.percent:SetPoint("RIGHT", meter.bar, "RIGHT", -METER_PADDING, 0)
+	meter.percent:SetText(tostring(meter.bar:GetValue()) .. "%")
 	meter.percent:EnableMouse(false)
 
 	meter.percent:SetFont(fontPath, METER_FONT_SIZE)
@@ -181,12 +194,14 @@ function CreateMeter(name, parent, iconPath, color)
 
 	meter.UpdateBgColor = function(self, bg)
 		bg = hex_to_rgb_normalized(bg or COLORS.ADDON)
+		bg[4] = 0.8
 		self.bgColor = bg
 		self.bar:SetStatusBarColor(unpack(bg))
 	end
 
 	meter.UpdateFgColor = function(self, fg)
 		fg = hex_to_rgb_normalized(fg or COLORS.WHITE)
+		fg[4] = 1
 
 		self.fgColor = fg
 		self.name:SetTextColor(unpack(fg))
@@ -197,6 +212,7 @@ function CreateMeter(name, parent, iconPath, color)
 	meter:UpdateBgColor(color)
 	meter:UpdateFgColor(COLORS.WHITE)
 
+	-- TODO convert to having a static update func that user can pass new update func to like a squid
 	local function _OnEnter(self)
 		-- TODO convert to custom panel, tooltip kinda sucks
 		GameTooltip:SetOwner(parent or self or UIParent, "ANCHOR_CURSOR_RIGHT")
@@ -216,4 +232,31 @@ function CreateMeter(name, parent, iconPath, color)
 	meter:SetScript("OnEnter", _OnEnter)
 	meter:SetScript("OnLeave", _OnLeave)
 	return meter
+end
+
+function Squid(width, height, texture, parent, update)
+	local squid = CreateFrame("Frame")
+	squid.width = width or 32
+	squid.height = height or 32
+	squid.image = texture or TEXTURES.flat
+	squid.parent = parent or UIParent
+	squid.update = update
+	squid.rotation = 0
+
+	if squid.parent.GetFrameLevel then
+		squid:SetFrameLevel((squid.parent:GetFrameLevel() or 1) + 1)
+	end
+
+	squid:SetHeight(squid.width)
+	squid:SetWidth(squid.height)
+	squid:SetPoint("CENTER", squid.parent)
+	squid:SetScript("OnUpdate", squid.update)
+
+	local t = squid:CreateTexture(nil, "BACKGROUND")
+	t:SetTexture(squid.image)
+	t:SetAllPoints(squid)
+
+	squid.texture = t
+
+	squid:Show()
 end

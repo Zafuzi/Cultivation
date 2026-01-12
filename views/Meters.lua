@@ -1,6 +1,15 @@
+-- Meter configuration
+METER_WIDTH = 300
+METER_HEIGHT = 32
+METER_FONT_SIZE = METER_HEIGHT / 2
+METER_SPACING = 8
+METER_PADDING = 4
+METER_ICON_SIZE = METER_FONT_SIZE
+
 MetersContainer = nil
 function OpenMeters()
-	MetersContainer = OpenModal("Meters", METER_WIDTH, METER_HEIGHT, UIParent, { isMovable = true })
+	MetersContainer = OpenModal("Meters", METER_WIDTH, METER_HEIGHT, UIParent,
+		{ isMovable = true, hasBorder = false, hasBackdrop = false })
 	MetersContainer:SetPoint("TOPLEFT", UIParent, "CENTER", 0, 0)
 	MetersContainer.isFirstRun = true
 
@@ -30,7 +39,7 @@ function OpenMeters()
 
 	local children = #{ MetersContainer:GetChildren() }
 	MetersContainer:SetWidth(METER_WIDTH + (METER_PADDING * 2))
-	MetersContainer:SetHeight((children * METER_HEIGHT) + (children * METER_PADDING) + (METER_PADDING * 2))
+	MetersContainer:SetHeight((children * METER_HEIGHT) + (children * METER_PADDING) + (METER_PADDING))
 	MetersContainer:Show()
 
 	MetersContainer:SetScript("OnUpdate", function(self)

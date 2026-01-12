@@ -9,7 +9,12 @@
 ## SavedVariablesPerCharacter: CultivationDB, CultivationCharDB
 
 # LIB
-lib/globals.lua
+lib/_globals/auras.lua
+lib/_globals/colors.lua
+lib/_globals/defaults.lua
+lib/_globals/fonts.lua
+lib/_globals/icons.lua
+lib/_globals/textures.lua
 lib/utils.lua
 lib/db.lua
 lib/gui.lua
