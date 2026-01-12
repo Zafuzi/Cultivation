@@ -1,4 +1,10 @@
 # Changelog
+## [0.0.4]
+
+### Alpha
+- added brightness, contrast, and gamma setting when values change
+- added animations while cultivating
+
 ## [0.0.3]
 
 ### Alpha
