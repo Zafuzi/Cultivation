@@ -122,5 +122,5 @@ function UpdatePlayerCultivation(elapsed)
 	end
 
 	SetCharSetting("cultivation_current", cultivation)
-	SetCharSetting("gamma", Clamp((3 * cultivation / milestone_value), 1, 3))
+	SetCharSetting("gamma", Clamp((1.2 * cultivation / milestone_value), 1, 1.2))
 end
