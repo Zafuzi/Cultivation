@@ -1,7 +1,7 @@
 --[[ KEEP AT TOP JUST CUS I LIKE IT HERE ]] --
 --[[ Addon defaults ]]                      --
 Addon = {
-	version = "0.0.4",
+	version = "0.0.5",
 	name = "Cultivation",
 
 	isLoaded = false,

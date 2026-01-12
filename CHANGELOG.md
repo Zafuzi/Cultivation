@@ -1,4 +1,9 @@
 # Changelog
+## [0.0.5]
+
+### Alpha
+- fixed gamma and added classic support 
+
 ## [0.0.4]
 
 ### Alpha
