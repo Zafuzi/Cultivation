@@ -85,6 +85,11 @@ end
 
 function AnyHelpfulAuraMatches(pred)
 	local found = false
+
+	if IsClassic then
+		return false
+	end
+
 	AuraUtil.ForEachAura("player", "HELPFUL", nil, function(aura)
 		if not aura then
 			return
@@ -152,6 +157,10 @@ function GetPlayerProp(prop)
 	end
 
 	if prop == "speed" then
+		if IsClassic then
+			return GetUnitSpeed("player") or 0
+		end
+
 		local isGliding, canGlide, forwardSpeed = C_PlayerInfo.GetGlidingInfo()
 		if canGlide and isGliding then
 			return forwardSpeed or 0
@@ -260,3 +269,5 @@ function WithCommas(n)
 	local left, num, right = string.match(n, '^([^%d]*%d)(%d*)(.-)$')
 	return left .. (num:reverse():gsub('(%d%d%d)', '%1,'):reverse()) .. right
 end
+
+IsClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
