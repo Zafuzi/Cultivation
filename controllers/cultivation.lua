@@ -1,8 +1,8 @@
-CultivationMilestones = { 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e10 }
-Cultivation_colors = { "#FF0000", "#FF9900", "#ffff00", "#00ff00", "#0000ff", "#ff00ff", "#ffffff" }
-Cultivation_tiers = { "Red", "Orange", "Yellow", "Green", "Blue", "Violet", "White" }
+CultivationMilestones = { 1e2, 1e4, 1e6, 1e8, 1e10, 1e12, 1e14, 1e20 }
+Cultivation_colors = { "#FF0000", "#FF9900", "#ffff00", "#00ff00", "#0000ff", "#ff00ff", "#ffffff", "#000000" }
+Cultivation_tiers = { "Red", "Orange", "Yellow", "Green", "Blue", "Violet", "White", "Black" }
 -- these slow down all other meters by xRate -> Higher cultivation = less dmg, less hunger, etc...
-CultivationMultipliers = { 1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4 }
+CultivationMultipliers = { 1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.2 }
 
 local currentMilestone = 1
 
@@ -15,25 +15,15 @@ function GetCurrentMilestone()
 end
 
 function GetNextMilestone()
-	local milestone = Addon.cultivationCache.milestone or 1
+	local milestone = GetCurrentMilestone()
 	local next = milestone + 1
-
-	if next > #CultivationMilestones then
-		return milestone
-	end
-
-	return next
+	return next > #CultivationMilestones and milestone or next
 end
 
 function GetPrevMilestone()
-	local milestone = Addon.cultivationCache.milestone or 1
+	local milestone = GetCurrentMilestone() - 1
 	local prev = milestone - 1
-
-	if prev < 1 then
-		return milestone
-	end
-
-	return prev
+	return prev < 1 and milestone or prev
 end
 
 function GetMilestoneValue(milestone)
@@ -41,8 +31,7 @@ function GetMilestoneValue(milestone)
 	return CultivationMilestones[milestone] or 0
 end
 
---- @param elapsed number the amount of time elapsed since last frame
-function GetPlayerCultivation(elapsed)
+function GetPlayerCultivation()
 	return Addon.cultivationCache.current
 end
 
@@ -118,7 +107,7 @@ function UpdatePlayerCultivation(elapsed)
 
 		Debug("milestone reached! new milestone: " .. milestone_value)
 		SetCharSetting("cultivation_milestone", currentMilestone)
-		MilestoneReached(currentMilestone)
+		MilestoneReached(next)
 	end
 
 	SetCharSetting("cultivation_current", cultivation)

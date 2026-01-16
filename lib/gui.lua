@@ -193,14 +193,14 @@ function CreateMeter(name, parent, iconPath, color)
 	meter.name:SetFont(fontPath, METER_FONT_SIZE)
 
 	meter.UpdateBgColor = function(self, bg)
-		bg = hex_to_rgb_normalized(bg or COLORS.ADDON)
+		bg = NormalizedColor(bg or COLORS.ADDON)
 		bg[4] = 0.8
 		self.bgColor = bg
 		self.bar:SetStatusBarColor(unpack(bg))
 	end
 
 	meter.UpdateFgColor = function(self, fg)
-		fg = hex_to_rgb_normalized(fg or COLORS.WHITE)
+		fg = NormalizedColor(fg or COLORS.WHITE)
 		fg[4] = 1
 
 		self.fgColor = fg
@@ -220,7 +220,7 @@ function CreateMeter(name, parent, iconPath, color)
 		if self.tooltip then
 			self:tooltip(self)
 		else
-			GameTooltip:SetText(name, unpack(hex_to_rgb_normalized(color or COLORS.ADDON)))
+			GameTooltip:SetText(name, unpack(NormalizedColor(color or COLORS.ADDON)))
 		end
 		GameTooltip:Show()
 	end
@@ -259,4 +259,6 @@ function Squid(width, height, texture, parent, update)
 	squid.texture = t
 
 	squid:Show()
+
+	return squid
 end

@@ -24,10 +24,10 @@ local cultivation = 0
 local multiplier = 1
 
 function UpdateCultivationMeter(elapsed)
-	milestone = Addon.cultivationCache.milestone
+	milestone = GetCurrentMilestone()
 	milestone_value = GetMilestoneValue(milestone)
 
-	cultivation = Addon.cultivationCache.current or 0
+	cultivation = GetPlayerCultivation()
 
 	-- Smooth the display value to prevent flickering from exhaustion-scaled calculations
 	local targetDisplay = 100 * (cultivation / milestone_value)
@@ -47,39 +47,88 @@ function UpdateCultivationMeter(elapsed)
 	-- Update bar value (inverted: full bar = 0% cultivation, empty bar = 100% cultivation)
 	CultivationMeter.bar:SetValue(displayValue)
 
-	-- Format percentage text
-	nameText = ""
-	nameText = nameText .. Dump(cultivation, 0) .. " "
-	multiplier = GetCultivationMultiplier()
-	if multiplier < 1 then
-		nameText = nameText .. "(" .. Dump((100 - (100 * multiplier)), 0) .. "% reduction)"
-	end
-
 	-- Apply text based on hideVialText setting
 	CultivationMeter.name:SetText("Cultivation")
 
 	if CultivationMeter.icon then
 		local rot = GetCultivationRate()
 		local scale = METER_ICON_SIZE * Clamp(0.8 + (cultivation / milestone_value * multiplier), 0.8, 1.2)
-		Debug(CultivationMeter.icon_rotation)
 		CultivationMeter.icon_rotation = (CultivationMeter.icon_rotation or 0) - rot
 		CultivationMeter.icon:SetRotation(math.rad(CultivationMeter.icon_rotation))
 		CultivationMeter.icon:SetSize(scale, scale)
 	end
 
-	CultivationMeter.percent:SetText(Dump(CultivationMeter.bar:GetValue()) .. "%")
+	local cutoff = 5
+	CultivationMeter.percent:SetText(Dump(cultivation, 0, false))
 end
 
 function SetupCultivationTooltip(self)
 	self.tooltip = function(_self)
-		local color = hex_to_rgb_normalized(Cultivation_colors[milestone])
+		local color = NormalizedColor(Cultivation_colors[milestone])
 		local nextMilestone = GetNextMilestone()
-		local nextColor = hex_to_rgb_normalized(Cultivation_colors[nextMilestone])
-		GameTooltip:AddLine("Cultivation", unpack(hex_to_rgb_normalized(COLORS.CULTIVATION)))
+		local nextColor = NormalizedColor(Cultivation_colors[nextMilestone])
+		GameTooltip:AddLine("Cultivation", unpack(NormalizedColor(COLORS.CULTIVATION)))
 		GameTooltip:AddLine("Core: " .. Dump(Cultivation_tiers[milestone]), unpack(color))
 		GameTooltip:AddLine("Next: " .. Dump(Cultivation_tiers[nextMilestone]), unpack(nextColor))
 		GameTooltip:AddLine("Current: " .. Dump(cultivation), 1, 1, 1)
 		GameTooltip:AddLine("Reduction: " .. Dump(GetCultivationMultiplier()), 1, 1, 1)
 		GameTooltip:AddLine("Rate: " .. Dump(GetCultivationRate()), 1, 1, 1)
 	end
+end
+
+CultivationAura = Squid(2000, 2000, TEXTURES.cultivation_aura, UIParent, function(self, elapsed)
+	if self.fadeIn then
+		self.opacity = Clamp(self.opacity, self.opacity + self.fade_rate, 1)
+	end
+
+	if self.fadeOut then
+		self.opacity = Clamp(self.opacity, 0, self.opacity - self.fade_rate)
+	end
+
+	if self.opacity >= 1 then
+		self.fadeIn = false
+		self.fadeOut = true
+	end
+
+	if self.opacity <= 0 then
+		self.fadeOut = false
+		if not self.hidden then
+			self.fadeIn = true
+		end
+	end
+
+	local low = self.hidden and 0.1 or 0.2
+	self:SetAlpha(Clamp(self.opacity, low, 0.8))
+
+	if not self.hidden then
+		local color = Cultivation_colors[GetCurrentMilestone()]
+		local nextColor = Cultivation_colors[GetNextMilestone()]
+
+		self.rotation = self.rotation + self.rotation_rate
+		self.texture:SetRotation(math.rad(self.rotation))
+		self.texture:SetVertexColor(unpack(NormalizedColor(color)))
+		self.texture:SetGradient("VERTICAL", WowColor(nextColor), WowColor(color))
+		self.color_needs_set = false
+	end
+end)
+
+CultivationAura.opacity = 0
+CultivationAura.rotation = 0
+CultivationAura.rotation_rate = -0.5
+CultivationAura.fadeIn = false
+CultivationAura.fade_rate = 0.0025
+CultivationAura.hidden = true
+CultivationAura:SetFrameStrata("TOOLTIP")
+CultivationAura:SetFrameLevel(99)
+CultivationAura:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -1000, 500)
+CultivationAura:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", 1000, -500)
+CultivationAura:Hide()
+
+CultivationAura.doShow = function(self)
+	self:Show()
+	self.hidden = false
+end
+
+CultivationAura.doHide = function(self)
+	self.hidden = true
 end

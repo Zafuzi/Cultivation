@@ -27,14 +27,14 @@ Addon = {
 
 -- Debug category to setting mapping (optimization for Debug function)
 DEFAULT_SETTINGS = {
-	debug_general = false,
+	debug_general = true,
 	debug_event = false,
-	debug_panel = true,
-	debug_player = false,
-	debug_database = false,
-	debug_hunger = false,
-	debug_thirst = false,
-	debug_cultivation = false,
+	debug_panel = false,
+	debug_player = true,
+	debug_database = true,
+	debug_hunger = true,
+	debug_thirst = true,
+	debug_cultivation = true,
 	debug_settings = true,
 }
 

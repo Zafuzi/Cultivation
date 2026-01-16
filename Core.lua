@@ -1,6 +1,8 @@
 local f = CreateFrame("Frame", "Cultivation")
 f:RegisterEvent("PLAYER_ENTERING_WORLD")
 f:RegisterEvent("ADDON_LOADED")
+f:RegisterEvent("UNIT_ENTERED_VEHICLE")
+f:RegisterEvent("UNIT_EXITED_VEHICLE")
 f:RegisterEvent("PLAYER_STOPPED_MOVING")
 f:RegisterEvent("PLAYER_STARTED_MOVING")
 f:RegisterEvent("PLAYER_UPDATE_RESTING")
@@ -12,8 +14,22 @@ f:SetScript("OnEvent", function(self, event, arg)
 
 		-- first time update
 		UpdateAddon(0)
+
+		if Addon.cultivationCache.active then
+			Cultivate(true)
+		end
+
 		OpenMeters()
 	end
+
+	if event == "UNIT_ENTERED_VEHICLE" and arg == "player" then
+		Cultivate(true)
+	end
+
+	if event == "UNIT_EXITED_VEHICLE" and arg == "player" then
+		Cultivate(false)
+	end
+
 
 	if event == "PLAYER_UPDATE_RESTING" then
 		Debug("Player update resting: " .. tostring(arg), "event")
@@ -76,6 +92,7 @@ function UpdateAddon(elapsed)
 	}
 
 
+
 	UpdatePlayerHunger(elapsed)
 	UpdatePlayerThirst(elapsed)
 	UpdatePlayerCultivation(elapsed)
@@ -130,10 +147,9 @@ SlashCmdList["CULTIVATION"] = function(msg)
 			SetSetting(key, isOn)
 
 			Debug("Toggled " .. tostring(key) .. ": " .. tostring(isOn))
-		end
-
-		if not DebugPanel:IsShown() then
-			DebugPanel:Show()
+			if key == "debug_panel" then
+				ToggleModal(DebugPanel)
+			end
 		end
 
 		return
