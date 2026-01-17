@@ -176,10 +176,14 @@ function Debug(msg, category)
 
 	local isCategoryOn = GetSetting("debug_" .. category)
 
+	local color = DEBUG_COLORS[category] or DEBUG_COLORS.general
+	local s = color .. Addon.name .. ":|r " .. Dump(msg)
+
 	if isCategoryOn then
-		local color = DEBUG_COLORS[category] or DEBUG_COLORS.ADDON
-		print(color .. Addon.name .. ":|r " .. Dump(msg))
+		print(s)
 	end
+
+	if DLAPI then DLAPI.DebugLog(Addon.name, s) end
 end
 
 -- Callback System
@@ -285,4 +289,4 @@ function WithCommas(n)
 	return left .. (num:reverse():gsub('(%d%d%d)', '%1,'):reverse()) .. right
 end
 
-IsClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
+IsClassic = (WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE)

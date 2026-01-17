@@ -1,7 +1,7 @@
 local config = {
 	name = "DebugPanel",
 	width = 400,
-	height = 100,
+	height = 300,
 	color = GUI_COLORS.headerColor,
 	backgroundColor = GUI_COLORS.cardBg,
 	borderColor = GUI_COLORS.cardBorder,

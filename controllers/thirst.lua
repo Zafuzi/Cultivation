@@ -17,7 +17,7 @@ function GetThirstRate()
 	-- drinking overrides everything
 	if Addon.playerCache.activity == "idle" and Addon.playerCache.drinking then
 		-- 20s of drinking = full
-		return -(100 / 20)
+		return -(100 / 16)
 	end
 
 	local tts = Addon.thirstCache.thirst_timeToDehydrationInHours or ONE_THIRD
@@ -32,20 +32,20 @@ function GetThirstRate()
 	end
 
 	if Addon.playerCache.activity == "walking" then
-		rate = tts / 3
-	end
-
-	if Addon.playerCache.activity == "running" or Addon.playerCache.activity == "flying" then
 		rate = tts / 4
 	end
 
-	if Addon.playerCache.activity == "swimming" then
+	if Addon.playerCache.activity == "running" or Addon.playerCache.activity == "flying" then
 		rate = tts / 6
+	end
+
+	if Addon.playerCache.activity == "swimming" then
+		rate = tts / 8
 	end
 
 	if Addon.playerCache.activity == "combat" then
 		-- combat is very demanding
-		rate = tts / 50
+		rate = tts / 16
 	end
 
 	if not rate then
