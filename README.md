@@ -2,7 +2,7 @@
 
 Condense your core, survive the wilds, master arts, reach the peak.
 
-![v0.0.3-alpha](screenshots/v0.0.3-alpha.PNG)
+![v0.1.0](screenshots/v0.1.0.PNG)
 
 ## Hunger
 
@@ -23,10 +23,12 @@ Passively increases over time (slowly). Split into milestones, reaching the next
 - Blue Core (-40%)
 - Violet Core (-50%)
 - White Core (-60%)
+- Black Core (-80%)
 
-You can increase your cultivation faster by partaking in combat (3x) or by manually cultivating. Right now this is done by detecting the player riding a vehicle because there is no surefire way to detect a user sitting. If you have a better idea for this please let me know.
+You can increase your cultivation faster by partaking in combat (3x) or by manually cultivating. 
+Right now this is done by detecting the player riding a vehicle, or by using the console command `/c cultivate`. If you have a better idea for this please let me know.
 
-I currently use the Comfortable Pile of Pelts toy to simulate active cultivation
+I currently use the `Comfortable Pile of Pelts` toy to simulate active cultivation
 
 ## Resting
 

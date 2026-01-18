@@ -1,4 +1,14 @@
+
 # Changelog
+## [0.1.0]
+### Minor Release
+- added auras (overlays) for Cultivation, Hunger, and Thirst
+- added brightness, gamma, and contrast settings when meters get low
+- improved controls for debug_panel
+- added auto cultivation when on a vehicle
+- added /c cultivate to manually start cultivating
+- added tooltips to meters
+
 ## [0.0.5]
 
 ### Alpha
