@@ -11,7 +11,6 @@ RegisterdEvents = {
 	{ name = "COMBAT_LOG_EVENT_UNFILTERED", enabled = true },
 	{ name = "CHAT_MSG_COMBAT_XP_GAIN",     enabled = true },
 	{ name = "WORLD_MAP_OPEN",              enabled = true },
-	-- { name = "MINI_MAP_OPEN",               enabled = true },
 }
 
 for idx, event in pairs(RegisterdEvents) do
@@ -80,10 +79,6 @@ f:SetScript("OnEvent", function(self, nameOfEvent, ...)
 		local xpGained = select(1, ...)
 		print("XP Gained: " .. tostring(xpGained))
 	end
-
-	if nameOfEvent == "WORLD_MAP_OPEN" then
-		Debug("Map: " .. Dump(...))
-	end
 end)
 
 hooksecurefunc(WorldMapFrame, "Show", function()
@@ -109,12 +104,14 @@ function UpdateAddon(elapsed)
 	Addon.playerCache.level = GetPlayerProp("level")
 	Addon.playerCache.health = GetPlayerProp("health")
 	Addon.playerCache.speed = GetPlayerProp("speed")
+
+	Addon.playerCache.resting = IsResting()
 	Addon.playerCache.eating = IsPlayerEating()
-	Addon.playerCache.drinking = IsPlayerDrinking()
 	Addon.playerCache.activity = GetMovementState()
 	Addon.playerCache.cultivating = IsPlayerCultivating()
 	Addon.playerCache.camping = IsPlayerCamping()
-	Addon.playerCache.resting = IsResting()
+	Addon.playerCache.drinking = IsPlayerDrinking()
+	Addon.playerCache.wellFed = IsPlayerWellFed()
 
 	Addon.settingsCache = {
 		brightness = GetCharSetting("brightness"),

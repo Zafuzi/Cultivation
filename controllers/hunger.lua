@@ -15,7 +15,7 @@ end
 
 function GetHungerRate()
 	-- eating overrides everything
-	if Addon.playerCache.activity == "idle" and Addon.playerCache.eating then
+	if Addon.playerCache.eating then
 		-- 20s of eating = full
 		return -(100 / 20)
 	end

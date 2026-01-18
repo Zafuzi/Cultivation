@@ -13,9 +13,14 @@ Addon = {
 		level = 0,
 		health = 0,
 		speed = 0,
+
 		resting = false,
 		eating = false,
-		activity = "idle"
+		activity = "idle",
+		cultivating = false,
+		camping = false,
+		drinking = false,
+		wellFed = false,
 	},
 
 	settingsCache = {

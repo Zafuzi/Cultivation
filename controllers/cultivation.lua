@@ -74,7 +74,7 @@ function GetCultivationRate()
 		rate = rate * 1.1
 	end
 
-	return rate
+	return rate * (Addon.playerCache.wellFed and 1.1 or 1)
 end
 
 function UpdatePlayerCultivation(elapsed)
