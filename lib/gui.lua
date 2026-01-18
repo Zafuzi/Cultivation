@@ -74,7 +74,6 @@ function OpenModal(name, width, height, parent, options)
 		PlaySound(808)
 	end)
 
-	PFrame:SetFrameStrata("DIALOG")
 	PFrame:SetClampedToScreen(true)
 
 	-- Title

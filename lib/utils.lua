@@ -72,6 +72,14 @@ function IsPlayerCamping()
 	end)
 end
 
+--- Check if player has Well Fed
+function IsPlayerWellFed()
+	-- Fast paths
+	if AuraByName("Well Fed") then
+		return true
+	end
+end
+
 function IsPlayerCultivating()
 	return Addon.cultivationCache and Addon.cultivationCache.active
 end
@@ -250,27 +258,18 @@ function WowColor(hex)
 	return CreateColor(unpack(NormalizedColor(hex)))
 end
 
-function indexOf(array, value)
-	for i, v in ipairs(array) do
-		if v == value then
-			return i
-		end
-	end
-	return nil
-end
-
 function RateAfterCultivation(rate)
-	return CultivationMultipliers[GetCurrentMilestone()] / (60 * rate + UPDATE_DELAY)
+	return CultivationMultipliers[GetCurrentMilestone()] / (60 * rate + UPDATE_DELAY) *
+		(Addon.playerCache.wellFed and .1 or 1)
 end
 
-function Cultivate(turnOn)
+function Cultivate(turnOn, silent)
 	SetCharSetting("cultivation_active", turnOn)
-	Debug("Cultivating: " .. tostring(turnOn))
 
 	if turnOn then
-		CultivationAura:doShow()
+		CultivationAura:doShow(silent)
 	else
-		CultivationAura:doHide()
+		CultivationAura:doHide(silent)
 	end
 
 	if Addon.playerCache.onVehicle then

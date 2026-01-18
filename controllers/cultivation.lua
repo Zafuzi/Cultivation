@@ -74,7 +74,7 @@ function GetCultivationRate()
 		rate = rate * 1.1
 	end
 
-	return rate
+	return rate * (Addon.playerCache.wellFed and 1.1 or 1)
 end
 
 function UpdatePlayerCultivation(elapsed)
@@ -106,6 +106,7 @@ function UpdatePlayerCultivation(elapsed)
 		milestone_value = next_value
 
 		Debug("milestone reached! new milestone: " .. milestone_value)
+		MessagesFrame:addMessage("MilestoneReached. You now have an " .. Cultivation_tiers[next] .. " core.")
 		SetCharSetting("cultivation_milestone", currentMilestone)
 		MilestoneReached(next)
 	end

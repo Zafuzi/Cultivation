@@ -124,11 +124,17 @@ CultivationAura:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -1000, 500)
 CultivationAura:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", 1000, -500)
 CultivationAura:Hide()
 
-CultivationAura.doShow = function(self)
+CultivationAura.doShow = function(self, silent)
+	if not silent then
+		MessagesFrame:addMessage("Cultivating x" .. GetCultivationMultiplier(), 3, COLORS.CULTIVATION)
+	end
 	self:Show()
 	self.hidden = false
 end
 
-CultivationAura.doHide = function(self)
+CultivationAura.doHide = function(self, silent)
+	if not silent then
+		MessagesFrame:addMessage("Cultivation Fades", 3, COLORS.CULTIVATION)
+	end
 	self.hidden = true
 end

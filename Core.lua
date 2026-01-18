@@ -10,6 +10,7 @@ RegisterdEvents = {
 	{ name = "PLAYER_UPDATE_RESTING",       enabled = true },
 	{ name = "COMBAT_LOG_EVENT_UNFILTERED", enabled = true },
 	{ name = "CHAT_MSG_COMBAT_XP_GAIN",     enabled = true },
+	{ name = "WORLD_MAP_OPEN",              enabled = true },
 }
 
 for idx, event in pairs(RegisterdEvents) do
@@ -22,15 +23,9 @@ f:SetScript("OnEvent", function(self, nameOfEvent, ...)
 	if nameOfEvent == "ADDON_LOADED" then
 		local addonName = select(1, ...)
 		if addonName == Addon.name then
-			Addon.isLoaded = true
-
 			-- first time update
+			Addon.isLoaded = true
 			UpdateAddon(0)
-
-			if Addon.cultivationCache.active then
-				Cultivate(true)
-			end
-
 			OpenMeters()
 		end
 		return
@@ -51,12 +46,6 @@ f:SetScript("OnEvent", function(self, nameOfEvent, ...)
 			Addon.playerCache.onVehicle = false
 			Cultivate(false)
 		end
-		return
-	end
-
-
-	if nameOfEvent == "PLAYER_UPDATE_RESTING" then
-		Addon.playerCache.resting = IsResting()
 		return
 	end
 
@@ -92,6 +81,20 @@ f:SetScript("OnEvent", function(self, nameOfEvent, ...)
 	end
 end)
 
+hooksecurefunc(WorldMapFrame, "Show", function()
+	if not Addon.playerCache.resting then
+		WorldMapFrame:Hide()
+		MessagesFrame:addMessage("Map is disabled outside of towns.")
+	end
+end)
+
+hooksecurefunc(Minimap, "Show", function()
+	if not Addon.playerCache.resting then
+		Minimap:Hide()
+		MessagesFrame:addMessage("MiniMap is disabled outside of towns.")
+	end
+end)
+
 f:SetPropagateKeyboardInput(true)
 
 local t = 0
@@ -101,12 +104,14 @@ function UpdateAddon(elapsed)
 	Addon.playerCache.level = GetPlayerProp("level")
 	Addon.playerCache.health = GetPlayerProp("health")
 	Addon.playerCache.speed = GetPlayerProp("speed")
+
+	Addon.playerCache.resting = IsResting()
 	Addon.playerCache.eating = IsPlayerEating()
-	Addon.playerCache.drinking = IsPlayerDrinking()
 	Addon.playerCache.activity = GetMovementState()
 	Addon.playerCache.cultivating = IsPlayerCultivating()
 	Addon.playerCache.camping = IsPlayerCamping()
-	Addon.playerCache.onVehicle = GetPlayerProp("using_vehicle")
+	Addon.playerCache.drinking = IsPlayerDrinking()
+	Addon.playerCache.wellFed = IsPlayerWellFed()
 
 	Addon.settingsCache = {
 		brightness = GetCharSetting("brightness"),
@@ -134,7 +139,13 @@ function UpdateAddon(elapsed)
 		active = GetCharSetting("cultivation_active"),
 	}
 
-
+	-- TODO: move this into a onetime event, not here in the update!
+	if not Addon.playerCache.resting then
+		if WorldMapFrame:IsShown() or Minimap:IsShown() then
+			HideUIPanel(WorldMapFrame)
+			HideUIPanel(Minimap)
+		end
+	end
 
 	UpdatePlayerHunger(elapsed)
 	UpdatePlayerThirst(elapsed)

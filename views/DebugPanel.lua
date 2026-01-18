@@ -12,6 +12,7 @@ DebugPanel = OpenModal(config.name, config.width, config.height, UIParent,
 	{ isScrollable = true, hasBackdrop = true, hasBorder = true, isMovable = true, isDismissable = true })
 DebugPanel:SetPoint("TOP", UIParent, "TOP", 0, 0)
 DebugPanel:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+DebugPanel:SetFrameStrata("DIALOG")
 DebugPanel:RegisterEvent("PLAYER_ENTERING_WORLD")
 DebugPanel:SetScript("OnMouseDown", function(self, event, args)
 	if event == "RightButton" then
