@@ -25,3 +25,20 @@ function UpdateThirstMeter(elapsed)
 	ThirstMeter.bar:SetValue(displayValue)
 	ThirstMeter.percent:SetText(Dump(ThirstMeter.bar:GetValue()) .. "%")
 end
+
+ThirstAura = Squid(2000, 2000, TEXTURES.aura, UIParent, function(self, elapsed)
+	local pct = Addon.thirstCache.current / 100
+	self.opacity = pct
+	self.rotation = self.rotation + self.rotation_rate
+	self.texture:SetRotation(math.rad(self.rotation))
+	self:SetAlpha(Clamp(self.opacity, 0, 1))
+end)
+
+ThirstAura.rotation = 0
+ThirstAura.rotation_rate = 0.5
+ThirstAura.opacity = 0
+ThirstAura:SetFrameStrata("TOOLTIP")
+ThirstAura:SetFrameLevel(99)
+ThirstAura:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -1000, 500)
+ThirstAura:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", 1000, -500)
+ThirstAura.texture:SetVertexColor(unpack(NormalizedColor(COLORS.THIRST)))

@@ -76,7 +76,7 @@ function SetupCultivationTooltip(self)
 	end
 end
 
-CultivationAura = Squid(2000, 2000, TEXTURES.cultivation_aura, UIParent, function(self, elapsed)
+CultivationAura = Squid(2000, 2000, TEXTURES.aura, UIParent, function(self, elapsed)
 	if self.fadeIn then
 		self.opacity = Clamp(self.opacity, self.opacity + self.fade_rate, 1)
 	end

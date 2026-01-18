@@ -25,3 +25,20 @@ function UpdateHungerMeter(elapsed)
 
 	HungerMeter.percent:SetText(Dump(HungerMeter.bar:GetValue()) .. "%")
 end
+
+HungerAura = Squid(2000, 2000, TEXTURES.aura, UIParent, function(self, elapsed)
+	local pct = Addon.hungerCache.current / 100
+	self.opacity = pct
+	self.rotation = self.rotation + self.rotation_rate
+	self.texture:SetRotation(math.rad(self.rotation))
+	self:SetAlpha(Clamp(self.opacity, 0, 1))
+end)
+
+HungerAura.rotation = 0
+HungerAura.rotation_rate = 0.5
+HungerAura.opacity = 0
+HungerAura:SetFrameStrata("TOOLTIP")
+HungerAura:SetFrameLevel(99)
+HungerAura:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -1000, 500)
+HungerAura:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", 1000, -500)
+HungerAura.texture:SetVertexColor(unpack(NormalizedColor(COLORS.HUNGER)))

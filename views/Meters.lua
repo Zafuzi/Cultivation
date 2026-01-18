@@ -10,7 +10,8 @@ MetersContainer = nil
 function OpenMeters()
 	MetersContainer = OpenModal("Meters", METER_WIDTH, METER_HEIGHT, UIParent,
 		{ isMovable = true, hasBorder = false, hasBackdrop = false })
-	MetersContainer:SetScale(0.6)
+	MetersContainer:SetFrameStrata("LOW")
+	MetersContainer:SetScale(UIParent:GetScale())
 	MetersContainer:SetPoint("TOPLEFT", UIParent, "CENTER", 0, 0)
 	MetersContainer:SetScript("OnMouseDown", function(self, button)
 		if button == "LeftButton" then
