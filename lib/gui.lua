@@ -41,20 +41,22 @@ function OpenModal(name, width, height, parent, options)
 
 	PFrame:SetSize(width or 100, height or 100)
 	PFrame:SetPoint("CENTER", parent, "CENTER", 0, 0)
-	local edgeSize
+	local edgeSize = 2
 	if hasBackdrop then
 		PFrame:SetBackdrop({
-			bgFile = "Interface\\Buttons\\WHITE8X8",
-			edgeFile = "Interface\\Buttons\\WHITE8X8",
+			bgFile = TEXTURES.flat,
+			edgeFile = TEXTURES.flat,
 			edgeSize = edgeSize
 		})
+		PFrame:SetBackdropColor(0.06, 0.06, 0.08, 0.8)
 	end
-	PFrame:SetBackdropColor(0.06, 0.06, 0.08, 0.3)
+
 	if not hasBorder then
 		PFrame:SetBackdropBorderColor(0.12, 0.12, 0.14, 0)
 	else
-		PFrame:SetBackdropBorderColor(0.12, 0.12, 0.14, 1)
+		PFrame:SetBackdropBorderColor(0.12, 0.12, 0.14, .8)
 	end
+
 	if isMovable then
 		PFrame:SetMovable(true)
 		PFrame:RegisterForDrag("LeftButton")
