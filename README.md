@@ -2,7 +2,7 @@
 
 Condense your core, survive the wilds, master arts, reach the peak.
 
-![v0.1.0](screenshots/v0.1.0.PNG)
+![v0.2.0](screenshots/v0.1.0.PNG)
 
 ## Hunger
 
@@ -37,3 +37,7 @@ Provides a 10% boost to drain rates and cultivation
 ## Player Campfires
 
 Provide a 10% boost to drain rates, and vastly improves open-world cultivation (from 1x to 4x) while active
+
+## Well Fed
+
+Provides a 10% boost to cultivation and reduces hunger / thirst by 90% when active

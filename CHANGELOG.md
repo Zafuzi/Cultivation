@@ -1,5 +1,11 @@
 
 # Changelog
+## [0.2.0]
+### Minor Release
+- Added Well Fed buff tracking
+- Added dialog for messages from the add-on
+- Made map / minimap hide when not resting
+
 ## [0.1.0]
 ### Minor Release
 - added auras (overlays) for Cultivation, Hunger, and Thirst
