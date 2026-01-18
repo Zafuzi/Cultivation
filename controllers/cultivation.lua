@@ -106,6 +106,7 @@ function UpdatePlayerCultivation(elapsed)
 		milestone_value = next_value
 
 		Debug("milestone reached! new milestone: " .. milestone_value)
+		MessagesFrame:addMessage("MilestoneReached. You now have an " .. Cultivation_tiers[next] .. " core.")
 		SetCharSetting("cultivation_milestone", currentMilestone)
 		MilestoneReached(next)
 	end

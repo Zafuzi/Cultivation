@@ -27,11 +27,14 @@ controllers/thirst.lua
 controllers/cultivation.lua
 
 # UI
+views/DebugPanel.lua
+
 views/HungerMeter.lua
 views/ThirstMeter.lua
 views/CultivationMeter.lua
 views/Meters.lua
-views/DebugPanel.lua
+
+views/MessagesFrame.lua
 
 # Keep on bottom
 Core.lua

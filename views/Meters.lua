@@ -11,8 +11,8 @@ function OpenMeters()
 	MetersContainer = OpenModal("Meters", METER_WIDTH, METER_HEIGHT, UIParent,
 		{ isMovable = true, hasBorder = false, hasBackdrop = false })
 	MetersContainer:SetFrameStrata("LOW")
-	MetersContainer:SetScale(UIParent:GetScale())
-	MetersContainer:SetPoint("TOPLEFT", UIParent, "CENTER", 0, 0)
+	MetersContainer:SetScale(1)
+	MetersContainer:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, 0)
 	MetersContainer:SetScript("OnMouseDown", function(self, button)
 		if button == "LeftButton" then
 			ToggleModal(DebugPanel)
@@ -48,7 +48,6 @@ function OpenMeters()
 
 	SetupCultivationTooltip(CultivationMeter)
 
-
 	local children = #{ MetersContainer:GetChildren() }
 
 	MetersContainer:SetWidth(METER_WIDTH + (METER_PADDING * 2))
@@ -58,6 +57,14 @@ function OpenMeters()
 	MetersContainer:SetScript("OnUpdate", function(self)
 		if MetersContainer.isFirstRun then
 			MetersContainer.isFirstRun = false
+		end
+	end)
+
+	C_Timer.After(1, function()
+		if IsPlayerCultivating() then
+			Cultivate(true, true)
+		else
+			Cultivate(false, true)
 		end
 	end)
 end
