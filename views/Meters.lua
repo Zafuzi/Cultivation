@@ -10,7 +10,19 @@ MetersContainer = nil
 function OpenMeters()
 	MetersContainer = OpenModal("Meters", METER_WIDTH, METER_HEIGHT, UIParent,
 		{ isMovable = true, hasBorder = false, hasBackdrop = false })
+	MetersContainer:SetFrameStrata("LOW")
+	MetersContainer:SetScale(UIParent:GetScale())
 	MetersContainer:SetPoint("TOPLEFT", UIParent, "CENTER", 0, 0)
+	MetersContainer:SetScript("OnMouseDown", function(self, button)
+		if button == "LeftButton" then
+			ToggleModal(DebugPanel)
+		end
+
+		if button == "RightButton" then
+			ReloadUI()
+		end
+	end)
+
 	MetersContainer.isFirstRun = true
 
 	HungerMeter = CreateMeter("Hunger", MetersContainer, ICONS.food, COLORS.HUNGER)
@@ -38,6 +50,7 @@ function OpenMeters()
 
 
 	local children = #{ MetersContainer:GetChildren() }
+
 	MetersContainer:SetWidth(METER_WIDTH + (METER_PADDING * 2))
 	MetersContainer:SetHeight((children * METER_HEIGHT) + (children * METER_PADDING) + (METER_PADDING))
 	MetersContainer:Show()

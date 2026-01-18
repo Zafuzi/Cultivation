@@ -41,20 +41,22 @@ function OpenModal(name, width, height, parent, options)
 
 	PFrame:SetSize(width or 100, height or 100)
 	PFrame:SetPoint("CENTER", parent, "CENTER", 0, 0)
-	local edgeSize
+	local edgeSize = 2
 	if hasBackdrop then
 		PFrame:SetBackdrop({
-			bgFile = "Interface\\Buttons\\WHITE8X8",
-			edgeFile = "Interface\\Buttons\\WHITE8X8",
+			bgFile = TEXTURES.flat,
+			edgeFile = TEXTURES.flat,
 			edgeSize = edgeSize
 		})
+		PFrame:SetBackdropColor(0.06, 0.06, 0.08, 0.8)
 	end
-	PFrame:SetBackdropColor(0.06, 0.06, 0.08, 0.3)
+
 	if not hasBorder then
 		PFrame:SetBackdropBorderColor(0.12, 0.12, 0.14, 0)
 	else
-		PFrame:SetBackdropBorderColor(0.12, 0.12, 0.14, 1)
+		PFrame:SetBackdropBorderColor(0.12, 0.12, 0.14, .8)
 	end
+
 	if isMovable then
 		PFrame:SetMovable(true)
 		PFrame:RegisterForDrag("LeftButton")
@@ -193,14 +195,14 @@ function CreateMeter(name, parent, iconPath, color)
 	meter.name:SetFont(fontPath, METER_FONT_SIZE)
 
 	meter.UpdateBgColor = function(self, bg)
-		bg = hex_to_rgb_normalized(bg or COLORS.ADDON)
+		bg = NormalizedColor(bg or COLORS.ADDON)
 		bg[4] = 0.8
 		self.bgColor = bg
 		self.bar:SetStatusBarColor(unpack(bg))
 	end
 
 	meter.UpdateFgColor = function(self, fg)
-		fg = hex_to_rgb_normalized(fg or COLORS.WHITE)
+		fg = NormalizedColor(fg or COLORS.WHITE)
 		fg[4] = 1
 
 		self.fgColor = fg
@@ -220,7 +222,7 @@ function CreateMeter(name, parent, iconPath, color)
 		if self.tooltip then
 			self:tooltip(self)
 		else
-			GameTooltip:SetText(name, unpack(hex_to_rgb_normalized(color or COLORS.ADDON)))
+			GameTooltip:SetText(name, unpack(NormalizedColor(color or COLORS.ADDON)))
 		end
 		GameTooltip:Show()
 	end
@@ -259,4 +261,6 @@ function Squid(width, height, texture, parent, update)
 	squid.texture = t
 
 	squid:Show()
+
+	return squid
 end

@@ -1,9 +1,9 @@
 ONE_THIRD = 1 / 3
 
-function Dump(value, precision)
+function Dump(value, precision, doNotation)
 	if type(value) == "number" then
 		precision = precision or 2
-		local fmtStr = string.format("%%0.%sf", precision)
+		local fmtStr = doNotation and string.format("%%0.%se", precision) or string.format("%%0.%sf", precision)
 		value = WithCommas(string.format(fmtStr, value))
 	end
 
@@ -176,10 +176,14 @@ function Debug(msg, category)
 
 	local isCategoryOn = GetSetting("debug_" .. category)
 
+	local color = DEBUG_COLORS[category] or DEBUG_COLORS.general
+	local s = color .. Addon.name .. ":|r " .. Dump(msg)
+
 	if isCategoryOn then
-		local color = DEBUG_COLORS[category] or DEBUG_COLORS.ADDON
-		print(color .. Addon.name .. ":|r " .. Dump(msg))
+		print(s)
 	end
+
+	if DLAPI then DLAPI.DebugLog(Addon.name, s) end
 end
 
 -- Callback System
@@ -224,7 +228,7 @@ function GetFont(fontName)
 	return FONTS[fontIndex]
 end
 
-function hex_to_rgb_normalized(hex)
+function NormalizedColor(hex)
 	if not hex or not (type(hex) == "string") then
 		return { 1, 1, 1 }
 	end
@@ -242,6 +246,10 @@ function hex_to_rgb_normalized(hex)
 	return { r / 255, g / 255, b / 255 }
 end
 
+function WowColor(hex)
+	return CreateColor(unpack(NormalizedColor(hex)))
+end
+
 function indexOf(array, value)
 	for i, v in ipairs(array) do
 		if v == value then
@@ -257,6 +265,17 @@ end
 
 function Cultivate(turnOn)
 	SetCharSetting("cultivation_active", turnOn)
+	Debug("Cultivating: " .. tostring(turnOn))
+
+	if turnOn then
+		CultivationAura:doShow()
+	else
+		CultivationAura:doHide()
+	end
+
+	if Addon.playerCache.onVehicle then
+		return
+	end
 
 	if turnOn then
 		DoEmote("SIT")
@@ -270,4 +289,4 @@ function WithCommas(n)
 	return left .. (num:reverse():gsub('(%d%d%d)', '%1,'):reverse()) .. right
 end
 
-IsClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
+IsClassic = (WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE)

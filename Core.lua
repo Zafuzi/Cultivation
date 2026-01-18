@@ -1,47 +1,106 @@
 local f = CreateFrame("Frame", "Cultivation")
-f:RegisterEvent("PLAYER_ENTERING_WORLD")
-f:RegisterEvent("ADDON_LOADED")
-f:RegisterEvent("PLAYER_STOPPED_MOVING")
-f:RegisterEvent("PLAYER_STARTED_MOVING")
-f:RegisterEvent("PLAYER_UPDATE_RESTING")
 
-f:SetScript("OnEvent", function(self, event, arg)
-	if event == "ADDON_LOADED" and arg == Addon.name then
-		Addon.isLoaded = true
-		Debug(Addon.name .. " is loaded.", "event")
+RegisterdEvents = {
+	{ name = "PLAYER_ENTERING_WORLD",       enabled = true },
+	{ name = "ADDON_LOADED",                enabled = true },
+	{ name = "UNIT_ENTERED_VEHICLE",        enabled = true },
+	{ name = "UNIT_EXITED_VEHICLE",         enabled = true },
+	{ name = "PLAYER_STOPPED_MOVING",       enabled = true },
+	{ name = "PLAYER_STARTED_MOVING",       enabled = true },
+	{ name = "PLAYER_UPDATE_RESTING",       enabled = true },
+	{ name = "COMBAT_LOG_EVENT_UNFILTERED", enabled = true },
+	{ name = "CHAT_MSG_COMBAT_XP_GAIN",     enabled = true },
+}
 
-		-- first time update
-		UpdateAddon(0)
-		OpenMeters()
+for idx, event in pairs(RegisterdEvents) do
+	if event.enabled and event.name ~= nil then
+		f:RegisterEvent(event.name)
+	end
+end
+
+f:SetScript("OnEvent", function(self, nameOfEvent, ...)
+	if nameOfEvent == "ADDON_LOADED" then
+		local addonName = select(1, ...)
+		if addonName == Addon.name then
+			Addon.isLoaded = true
+
+			-- first time update
+			UpdateAddon(0)
+
+			if Addon.cultivationCache.active then
+				Cultivate(true)
+			end
+
+			OpenMeters()
+		end
+		return
 	end
 
-	if event == "PLAYER_UPDATE_RESTING" then
-		Debug("Player update resting: " .. tostring(arg), "event")
+	if nameOfEvent == "UNIT_ENTERED_VEHICLE" then
+		local unitName = select(1, ...)
+		if unitName == "player" then
+			Addon.playerCache.onVehicle = true
+			Cultivate(true)
+		end
+		return
 	end
 
-	if event == "PLAYER_STARTED_MOVING" then
-		Debug("Player update started moving: " .. tostring(arg), "event")
+	if nameOfEvent == "UNIT_EXITED_VEHICLE" then
+		local unitName = select(1, ...)
+		if unitName == "player" then
+			Addon.playerCache.onVehicle = false
+			Cultivate(false)
+		end
+		return
+	end
+
+
+	if nameOfEvent == "PLAYER_UPDATE_RESTING" then
+		Addon.playerCache.resting = IsResting()
+		return
+	end
+
+	if nameOfEvent == "PLAYER_STARTED_MOVING" then
 		if GetCharSetting("cultivation_active") then
 			Cultivate(false)
 		end
+		return
+	end
+
+	if nameOfEvent == "COMBAT_LOG_EVENT_UNFILTERED" then
+		local playerGUID = UnitGUID("player")
+		local MSG_CRITICAL_HIT = "Your %s critically hit %s for %d damage!"
+		local _, subevent, _, sourceGUID, _, _, _, _, destName = CombatLogGetCurrentEventInfo()
+		local spellId, amount, critical
+
+		if subevent == "SWING_DAMAGE" then
+			amount, _, _, _, _, _, critical = select(12, CombatLogGetCurrentEventInfo())
+		elseif subevent == "SPELL_DAMAGE" then
+			spellId, _, _, amount, _, _, _, _, _, critical = select(12, CombatLogGetCurrentEventInfo())
+		end
+
+		if critical and sourceGUID == playerGUID then
+			-- get the link of the spell or the MELEE globalstring
+			local action = spellId and GetSpellLink(spellId) or MELEE
+			print(MSG_CRITICAL_HIT:format(action, destName, amount))
+		end
+	end
+
+	if nameOfEvent == "CHAT_MSG_COMBAT_XP_GAIN" then
+		local xpGained = select(1, ...)
+		print("XP Gained: " .. tostring(xpGained))
 	end
 end)
 
-f:SetScript("OnKeyDown", function(self, key)
-	if key == "ESCAPE" then
-		Cultivate(false)
-	end
-end)
 f:SetPropagateKeyboardInput(true)
 
 local t = 0
-UPDATE_DELAY = 1 / 100
+UPDATE_DELAY = 1 / 60
 function UpdateAddon(elapsed)
 	Addon.playerCache.name = GetPlayerProp("name")
 	Addon.playerCache.level = GetPlayerProp("level")
 	Addon.playerCache.health = GetPlayerProp("health")
 	Addon.playerCache.speed = GetPlayerProp("speed")
-	Addon.playerCache.resting = IsResting()
 	Addon.playerCache.eating = IsPlayerEating()
 	Addon.playerCache.drinking = IsPlayerDrinking()
 	Addon.playerCache.activity = GetMovementState()
@@ -74,6 +133,7 @@ function UpdateAddon(elapsed)
 		color = GetCharSetting("cultivation_color"),
 		active = GetCharSetting("cultivation_active"),
 	}
+
 
 
 	UpdatePlayerHunger(elapsed)
@@ -130,10 +190,9 @@ SlashCmdList["CULTIVATION"] = function(msg)
 			SetSetting(key, isOn)
 
 			Debug("Toggled " .. tostring(key) .. ": " .. tostring(isOn))
-		end
-
-		if not DebugPanel:IsShown() then
-			DebugPanel:Show()
+			if key == "debug_panel" then
+				ToggleModal(DebugPanel)
+			end
 		end
 
 		return

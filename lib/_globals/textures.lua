@@ -7,4 +7,5 @@ TEXTURES = {
 	tooltip = "Interface\\Tooltips\\UI-Tooltip-Background",        -- Otravi-like
 	tootip_border = "Interface\\Tooltips\\UI-Tooltip-Border",
 	striped = "Interface\\RaidFrame\\Raid-Bar-Resource-Fill",      -- Striped
+	aura = "Interface\\Addons\\Cultivation\\assets\\cultivation_aura.png",
 }

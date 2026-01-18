@@ -1,14 +1,15 @@
 local config = {
 	name = "DebugPanel",
 	width = 400,
-	height = 100,
+	height = 300,
 	color = GUI_COLORS.headerColor,
 	backgroundColor = GUI_COLORS.cardBg,
 	borderColor = GUI_COLORS.cardBorder,
 }
 
 local padding = 16
-DebugPanel = OpenModal(config.name, config.width, config.height, UIParent, { isScrollable = true })
+DebugPanel = OpenModal(config.name, config.width, config.height, UIParent,
+	{ isScrollable = true, hasBackdrop = true, hasBorder = true, isMovable = true, isDismissable = true })
 DebugPanel:SetPoint("TOP", UIParent, "TOP", 0, 0)
 DebugPanel:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
 DebugPanel:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -17,7 +18,6 @@ DebugPanel:SetScript("OnMouseDown", function(self, event, args)
 		ReloadUI {}
 	end
 end)
-DebugPanel:SetIgnoreParentAlpha(true)
 
 -- Style scrollbar
 local scrollFrame = DebugPanel.scrollFrame
