@@ -1,9 +1,9 @@
-## Interface: 120001,110207,11508
+## Interface: 120001
 ## Title: Cultivation
 ## Category: Roleplay
 ## Notes: Condense your core, survive the wilds, master arts, reach the peak.
 ## Author: Zafuzi
-## Version: 0.2.1
+## Version: 0.3.1
 ## X-Curse-Project-ID: 1425891
 ## IconTexture: Interface\AddOns\Cultivation\assets\logo
 ## Dependencies: LibStub, Toasts
