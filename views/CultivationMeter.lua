@@ -1,3 +1,4 @@
+local Toasts = LibStub("Toasts-0.1")
 function MilestoneReached(next)
 	local next_color = Cultivation_colors[next]
 	SetCharSetting("cultivation_color", next_color)
@@ -125,8 +126,20 @@ CultivationAura:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", 1000, -500)
 CultivationAura:Hide()
 
 CultivationAura.doShow = function(self, silent)
+	print(Dump(Toasts.UI.Toasts))
 	if not silent then
-		MessagesFrame:addMessage("Cultivating x" .. GetCultivationMultiplier(), 3, COLORS.CULTIVATION)
+		Toasts.UI.Toasts.Push({
+			title = "Cultivating",
+			text = "Your cultivation rate has increased",
+			icon = Toasts.UI.Icons.INFO,
+			progress = 1,
+			duration = 4,
+			onClick = function()
+				print("Toast clicked")
+			end,
+		})
+
+		Toasts.UI.Toasts.SetAnchor("TOP", 0, -20)
 	end
 	self:Show()
 	self.hidden = false
@@ -134,7 +147,18 @@ end
 
 CultivationAura.doHide = function(self, silent)
 	if not silent then
-		MessagesFrame:addMessage("Cultivation Fades", 3, COLORS.CULTIVATION)
+		Toasts.UI.Toasts.Push({
+			title = "Cultivation Fades",
+			text = "Your cultivation rate has decreased",
+			icon = Toasts.UI.Icons.INFO,
+			progress = 1,
+			duration = 4,
+			onClick = function()
+				print("Toast clicked")
+			end,
+		})
+
+		Toasts.UI.Toasts.SetAnchor("TOP", 0, -20)
 	end
 	self.hidden = true
 end

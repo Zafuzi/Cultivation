@@ -1,4 +1,5 @@
 local f = CreateFrame("Frame", "Cultivation")
+local Toasts = LibStub("Toasts-0.1")
 
 RegisterdEvents = {
 	{ name = "PLAYER_ENTERING_WORLD",       enabled = true },
@@ -84,14 +85,36 @@ end)
 hooksecurefunc(WorldMapFrame, "Show", function()
 	if not Addon.playerCache.resting then
 		WorldMapFrame:Hide()
-		MessagesFrame:addMessage("Map is disabled outside of towns.")
+		Toasts.UI.Toasts.Push({
+			title = "Adventuring",
+			text = "Map is disabled outside of towns",
+			icon = Toasts.UI.Icons.ERROR,
+			progress = 1,
+			duration = 4,
+			onClick = function()
+				print("Toast clicked")
+			end,
+		})
+
+		Toasts.UI.Toasts.SetAnchor("TOP", 0, -20)
 	end
 end)
 
 hooksecurefunc(Minimap, "Show", function()
 	if not Addon.playerCache.resting then
 		Minimap:Hide()
-		MessagesFrame:addMessage("MiniMap is disabled outside of towns.")
+		Toasts.UI.Toasts.Push({
+			title = "Adventuring",
+			text = "Minimap is disabled outside of towns",
+			icon = Toasts.UI.Icons.ERROR,
+			progress = 1,
+			duration = 4,
+			onClick = function()
+				print("Toast clicked")
+			end,
+		})
+
+		Toasts.UI.Toasts.SetAnchor("TOP", 0, -20)
 	end
 end)
 

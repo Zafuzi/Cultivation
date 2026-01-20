@@ -1,3 +1,5 @@
+local Toasts = LibStub("Toasts-0.1")
+
 CultivationMilestones = { 1e2, 1e4, 1e6, 1e8, 1e10, 1e12, 1e14, 1e20 }
 Cultivation_colors = { "#FF0000", "#FF9900", "#ffff00", "#00ff00", "#0000ff", "#ff00ff", "#ffffff", "#000000" }
 Cultivation_tiers = { "Red", "Orange", "Yellow", "Green", "Blue", "Violet", "White", "Black" }
@@ -105,8 +107,19 @@ function UpdatePlayerCultivation(elapsed)
 		currentMilestone = next
 		milestone_value = next_value
 
-		Debug("milestone reached! new milestone: " .. milestone_value)
-		MessagesFrame:addMessage("MilestoneReached. You now have an " .. Cultivation_tiers[next] .. " core.")
+		Toasts.UI.Toasts.Push({
+			title = "Milestone Reached",
+			text = "You now have an " .. Cultivation_tiers[next] .. " core.",
+			icon = Toasts.UI.Icons.LOOT,
+			progress = 1,
+			duration = 4,
+			onClick = function()
+				print("Toast clicked")
+			end,
+		})
+
+		Toasts.UI.Toasts.SetAnchor("TOP", 0, -20)
+
 		SetCharSetting("cultivation_milestone", currentMilestone)
 		MilestoneReached(next)
 	end
