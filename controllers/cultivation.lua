@@ -1,5 +1,3 @@
-local Toasts = LibStub("Toasts-0.1")
-
 CultivationMilestones = { 1e2, 1e4, 1e6, 1e8, 1e10, 1e12, 1e14, 1e20 }
 Cultivation_colors = { "#FF0000", "#FF9900", "#ffff00", "#00ff00", "#0000ff", "#ff00ff", "#ffffff", "#000000" }
 Cultivation_tiers = { "Red", "Orange", "Yellow", "Green", "Blue", "Violet", "White", "Black" }

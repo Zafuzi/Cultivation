@@ -1,5 +1,5 @@
 local f = CreateFrame("Frame", "Cultivation")
-local Toasts = LibStub("Toasts-0.1")
+Toasts = LibStub("Toasts-0.1")
 
 RegisterdEvents = {
 	{ name = "PLAYER_ENTERING_WORLD",       enabled = true },

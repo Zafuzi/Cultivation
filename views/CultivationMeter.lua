@@ -1,4 +1,3 @@
-local Toasts = LibStub("Toasts-0.1")
 function MilestoneReached(next)
 	local next_color = Cultivation_colors[next]
 	SetCharSetting("cultivation_color", next_color)
