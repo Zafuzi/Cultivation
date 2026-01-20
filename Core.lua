@@ -224,6 +224,12 @@ SlashCmdList["CULTIVATION"] = function(msg)
 	if command == "dbg" then
 		if value ~= nil then
 			local key = "debug_" .. tostring(value)
+			-- Check if the key exists in DEFAULT_SETTINGS before toggling
+			if DEFAULT_SETTINGS[key] == nil then
+				Debug("Unknown debug key: " .. tostring(key))
+				return
+			end
+
 			local isOn = not GetSetting(key)
 			SetSetting(key, isOn)
 
@@ -233,6 +239,22 @@ SlashCmdList["CULTIVATION"] = function(msg)
 			end
 		end
 
+		return
+	end
+
+	if command == "panel" then
+		-- Shorthand for /c dbg panel
+		local key = "debug_panel"
+		if DEFAULT_SETTINGS[key] == nil then
+			Debug("Unknown debug key: " .. tostring(key))
+			return
+		end
+
+		local isOn = not GetSetting(key)
+		SetSetting(key, isOn)
+
+		Debug("Toggled " .. tostring(key) .. ": " .. tostring(isOn))
+		ToggleModal(DebugPanel)
 		return
 	end
 
