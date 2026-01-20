@@ -86,6 +86,7 @@ end)
 DebugPanel:SetScript("OnUpdate", function(self, elapsed)
 	bodyContent = ""
 
+	self:debug_addon()
 	self:debug_hunger()
 	self:debug_thirst()
 	self:debug_cultivation()
@@ -145,6 +146,15 @@ DebugPanel.debug_cultivation = function()
 	if GetSetting("debug_cultivation") then
 		renderTable("Cultivation", Addon.cultivationCache, COLORS.CULTIVATION)
 	end
+end
+
+DebugPanel.debug_addon = function()
+	if not Addon then
+		h2("Missing Addon", COLORS.ERROR)
+		return
+	end
+
+	h1(Addon.name .. " " .. Addon.version, COLORS.ADDON)
 end
 
 DebugPanel:SetScript("OnEvent", function(self, event, arg)

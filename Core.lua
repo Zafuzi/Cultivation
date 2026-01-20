@@ -1,3 +1,4 @@
+local ADDON, _Version = ...
 local f = CreateFrame("Frame", "Cultivation")
 Toasts = LibStub("Toasts-0.1")
 
@@ -25,6 +26,9 @@ f:SetScript("OnEvent", function(self, nameOfEvent, ...)
 		local addonName = select(1, ...)
 		if addonName == Addon.name then
 			-- first time update
+			local version = C_AddOns.GetAddOnMetadata(ADDON, "Version")
+			Addon.version = version
+			Addon.name = ADDON
 			Addon.isLoaded = true
 			UpdateAddon(0)
 			OpenMeters()

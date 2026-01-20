@@ -1,5 +1,9 @@
 
 # Changelog
+## [0.2.1]
+### Patch 
+- Added LibStub and Toasts 
+
 ## [0.2.0]
 ### Minor Release
 - Added Well Fed buff tracking
