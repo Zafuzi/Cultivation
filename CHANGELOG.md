@@ -1,5 +1,9 @@
 
 # Changelog
+## [0.3.0]
+### Minor Release 
+- Removed support for classic 
+
 ## [0.2.1]
 ### Patch 
 - Added LibStub and Toasts 

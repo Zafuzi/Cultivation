@@ -3,7 +3,7 @@
 ## Category: Roleplay
 ## Notes: Condense your core, survive the wilds, master arts, reach the peak.
 ## Author: Zafuzi
-## Version: 0.3.1
+## Version: 0.3.0
 ## X-Curse-Project-ID: 1425891
 ## IconTexture: Interface\AddOns\Cultivation\assets\logo
 ## Dependencies: LibStub, Toasts
