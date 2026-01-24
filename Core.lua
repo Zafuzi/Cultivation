@@ -1,18 +1,15 @@
 local ADDON, _Version = ...
 local f = CreateFrame("Frame", "Cultivation")
-Toasts = LibStub("Toasts-0.1")
 
 RegisterdEvents = {
-	{ name = "PLAYER_ENTERING_WORLD",       enabled = true },
-	{ name = "ADDON_LOADED",                enabled = true },
-	{ name = "UNIT_ENTERED_VEHICLE",        enabled = true },
-	{ name = "UNIT_EXITED_VEHICLE",         enabled = true },
-	{ name = "PLAYER_STOPPED_MOVING",       enabled = true },
-	{ name = "PLAYER_STARTED_MOVING",       enabled = true },
-	{ name = "PLAYER_UPDATE_RESTING",       enabled = true },
-	{ name = "COMBAT_LOG_EVENT_UNFILTERED", enabled = true },
-	{ name = "CHAT_MSG_COMBAT_XP_GAIN",     enabled = true },
-	{ name = "WORLD_MAP_OPEN",              enabled = true },
+	{ name = "PLAYER_ENTERING_WORLD", enabled = true },
+	{ name = "ADDON_LOADED",          enabled = true },
+	{ name = "UNIT_ENTERED_VEHICLE",  enabled = true },
+	{ name = "UNIT_EXITED_VEHICLE",   enabled = true },
+	{ name = "PLAYER_STOPPED_MOVING", enabled = true },
+	{ name = "PLAYER_STARTED_MOVING", enabled = true },
+	{ name = "PLAYER_UPDATE_RESTING", enabled = true },
+	{ name = "WORLD_MAP_OPEN",        enabled = true },
 }
 
 for idx, event in pairs(RegisterdEvents) do
