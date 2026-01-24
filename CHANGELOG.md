@@ -1,5 +1,9 @@
 
 # Changelog
+## [0.3.1]
+### Patch 
+- Removed LibStub
+
 ## [0.3.0]
 ### Minor Release 
 - Removed support for classic 
