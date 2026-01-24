@@ -105,7 +105,23 @@ end
 
 DebugPanel.debug_player = function()
 	if GetSetting("debug_player") then
-		renderTable("PlayerCache", Addon.playerCache, COLORS.TABLE)
+		local t = {
+			name = Addon.playerCache.name,
+			level = Addon.playerCache.level,
+			speed = Addon.playerCache.speed,
+
+			resting = Addon.playerCache.resting,
+			eating = Addon.playerCache.eating,
+			activity = Addon.playerCache.activity,
+			cultivating = Addon.playerCache.cultivating,
+			camping = Addon.playerCache.camping,
+			drinking = Addon.playerCache.drinking,
+			wellFed = Addon.playerCache.wellFed,
+
+			onVehicle = Addon.playerCache.onVehicle,
+		}
+
+		renderTable("PlayerCache", t, COLORS.TABLE)
 	end
 end
 

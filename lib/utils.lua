@@ -2,24 +2,47 @@ ONE_THIRD = 1 / 3
 
 function Dump(value, precision, doNotation)
 	if type(value) == "number" then
+		if issecretvalue(value) then
+			error("SECRET NUMBER REFERENCE")
+			return
+		end
+
 		precision = precision or 2
 		local fmtStr = doNotation and string.format("%%0.%se", precision) or string.format("%%0.%sf", precision)
 		value = WithCommas(string.format(fmtStr, value))
 	end
 
 	if type(value) == "boolean" then
+		if issecretvalue(value) then
+			error("SECRET BOOLEAN REFERENCE")
+			return
+		end
+
 		local isTrue = (not not value) and "x" or " "
 		value = "[" .. (isTrue) .. "]"
 	end
 
 	if type(value) == "table" then
+		if issecrettable(value) then
+			print("SECRET TABLE REFERENCE")
+			return
+		end
+
 		local nv = ""
 		for key, v in pairs(value) do
+			if issecretvalue(v) then
+				error(tostring(key) .. " IS SECRET VALUE")
+				return
+			end
 			nv = nv .. Dump(key) .. "=" .. Dump(v)
 		end
 		value = nv
 	end
 
+	if issecretvalue(value) then
+		error("SECRET VALUE REFERENCE")
+		return
+	end
 	return tostring(value)
 end
 
@@ -190,8 +213,6 @@ function Debug(msg, category)
 	if isCategoryOn then
 		print(s)
 	end
-
-	if DLAPI then DLAPI.DebugLog(Addon.name, s) end
 end
 
 -- Callback System
@@ -286,6 +307,18 @@ end
 function WithCommas(n)
 	local left, num, right = string.match(n, '^([^%d]*%d)(%d*)(.-)$')
 	return left .. (num:reverse():gsub('(%d%d%d)', '%1,'):reverse()) .. right
+end
+
+function DeepCopy(obj, seen)
+	if type(obj) ~= 'table' then return obj end
+	if seen and seen[obj] then return seen[obj] end
+	local s = seen or {}
+	local res = {}
+	s[obj] = res
+	for k, v in pairs(obj) do
+		res[DeepCopy(k, s)] = DeepCopy(v, s)
+	end
+	return setmetatable(res, getmetatable(obj))
 end
 
 IsClassic = (WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE)
