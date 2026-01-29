@@ -1,5 +1,15 @@
 
 # Changelog
+## [0.4.1]
+### Patch
+- **Cultivation on reload:** Cultivation aura and state (on/off) restore after reload; no need to toggle manually.
+- **Offline catch-up:** If you were cultivating when you logged out, you receive up to 2 hours of “rested” cultivation at 80% rate when you log back in (like rested XP).
+- **Community chat:** Reaching a cultivation milestone announces to Steady Mountain Sect (channel 5): “This one has forged a [tier] core. The heavens take notice.”
+- **Companion bonus:** Having a non-combat pet (companion) summoned grants +5% cultivation rate.
+- **Combat qi summary:** After combat, a single “Battle Refinement” toast shows qi refined (time-in-combat based). Multiple combats are combined into one notification 10 seconds after the last combat end; the toast never shows while you are still in combat.
+- **Hunger/thirst floor fix:** You can reach 100% satiation again. The cultivation floor is the minimum satiation you can fall to (e.g. tier 2 = 5%), not a cap on fullness.
+- **Combat log removed:** COMBAT_LOG_EVENT is protected; combat qi is time-based only (no damage/kill scaling).
+
 ## [0.4.0]
 ### Minor Release
 - **Performance:** Separated calculations from animations. Calculations run on a simulation tick (1s normally, 2.5s in combat/instance); meter and aura animations run at ~15 FPS (~10 in combat/instance). CPU use reduced, especially in combat and instances.

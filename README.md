@@ -20,9 +20,14 @@ Passively increases over time. Reaching milestones (cores) reduces hunger/thirst
 
 - **Red** → **Orange** (-10%) → **Yellow** (-20%) → **Green** (-30%) → **Blue** (-40%) → **Violet** (-50%) → **White** (-60%) → **Black** (-80%) decay reduction
 
-**Cultivation rewards (scaling with tier):** decay reduction, food/drink efficiency, resting recovery (%/min while resting), and a floor so hunger/thirst never drop below a minimum.
+**Cultivation rewards (scaling with tier):** decay reduction, food/drink efficiency, resting recovery (%/min while resting), and a floor so hunger/thirst never drop below a minimum (you can still reach 100% satiation).
 
-Increase cultivation faster by fighting (3×) or by manually cultivating. Use `/c cultivate` or sit on a vehicle to toggle. Many players use the *Comfortable Pile of Pelts* toy for active cultivation.
+Increase cultivation faster by fighting (3×), by manually cultivating, or by having a companion (non-combat pet) summoned (+5%). Use `/c cultivate` or sit on a vehicle to toggle. Many players use the *Comfortable Pile of Pelts* toy for active cultivation.
+
+- **On reload:** Cultivation state (aura on/off) restores automatically.
+- **Offline catch-up:** If you were cultivating when you logged out, you get up to 2 hours of rested cultivation (80% rate) when you log back in.
+- **Milestones:** Reaching a new core announces to Steady Mountain Sect (channel 5).
+- **Combat summary:** After combat, a single “Battle Refinement” toast shows qi refined (time in combat). Multiple combats are combined into one notification 10 seconds after the last combat end; the toast never appears while you are still in combat.
 
 ## Resting
 
