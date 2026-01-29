@@ -26,6 +26,17 @@ function UpdateHungerMeter(elapsed)
 	HungerMeter.percent:SetText(Dump(HungerMeter.bar:GetValue()) .. "%")
 end
 
+function SetupHungerTooltip(self)
+	self.tooltip = function(_self)
+		local pct = Addon.hungerCache and (100 - (Addon.hungerCache.current or 0)) or 0
+		GameTooltip:AddLine("Five Grains", unpack(NormalizedColor(COLORS.HUNGER)))
+		GameTooltip:AddLine("The mortal vessel's attachment to earthly sustenance.", 0.7, 0.65, 0.5)
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine("This one's body retains " .. Dump(pct) .. "% fullness.", 0.9, 0.85, 0.7)
+		GameTooltip:AddLine("As your core refines, mere grain holds less sway.", 0.55, 0.5, 0.45)
+	end
+end
+
 HungerAura = Squid(2000, 2000, TEXTURES.aura, UIParent, function(self, elapsed)
 	local pct = Addon.hungerCache.current / 100
 	self.opacity = pct

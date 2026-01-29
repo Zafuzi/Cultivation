@@ -54,15 +54,6 @@ function IsPlayerEating()
 			return true
 		end
 	end
-
-	-- Full scan
-	return AnyHelpfulAuraMatches(function(aura)
-		local name = aura.name
-		if not name then
-			return false
-		end
-		return EATING_AURAS[name] == true
-	end)
 end
 
 -- Check if player is drinking
@@ -70,14 +61,6 @@ function IsPlayerDrinking()
 	if AuraByName("Drink") or AuraByName("Food & Drink") or AuraByName("Refreshment") then
 		return true
 	end
-
-	return AnyHelpfulAuraMatches(function(aura)
-		local name = aura.name
-		if not name then
-			return false
-		end
-		return name == "Drink" or name == "Food & Drink" or name == "Refreshment"
-	end)
 end
 
 -- Check if player is near a campfire
@@ -85,14 +68,6 @@ function IsPlayerCamping()
 	if AuraByName("Cozy Fire") then
 		return true
 	end
-
-	return AnyHelpfulAuraMatches(function(aura)
-		local name = aura.name
-		if not name then
-			return false
-		end
-		return name == "Cozy Fire"
-	end)
 end
 
 --- Check if player has Well Fed
@@ -112,25 +87,6 @@ end
 ------------------------------------------------------------
 function AuraByName(name)
 	return AuraUtil.FindAuraByName(name, "player", "HELPFUL")
-end
-
-function AnyHelpfulAuraMatches(pred)
-	local found = false
-
-	if IsClassic then
-		return false
-	end
-
-	AuraUtil.ForEachAura("player", "HELPFUL", nil, function(aura)
-		if not aura then
-			return
-		end
-		if pred(aura) then
-			found = true
-			return true -- stop iteration
-		end
-	end)
-	return found
 end
 
 function GetMovementState()
@@ -280,7 +236,8 @@ function WowColor(hex)
 end
 
 function RateAfterCultivation(rate)
-	return CultivationMultipliers[GetCurrentMilestone()] / (60 * rate + UPDATE_DELAY) *
+	local baseInterval = 1 / 60
+	return CultivationMultipliers[GetCurrentMilestone()] / (60 * rate + baseInterval) *
 		(Addon.playerCache.wellFed and .1 or 1)
 end
 

@@ -251,7 +251,7 @@ function Squid(width, height, texture, parent, update)
 	squid:SetHeight(squid.width)
 	squid:SetWidth(squid.height)
 	squid:SetPoint("CENTER", squid.parent)
-	squid:SetScript("OnUpdate", squid.update)
+	-- Animation is driven by Scheduler (chunked), not every-frame OnUpdate
 
 	local t = squid:CreateTexture(nil, "BACKGROUND")
 	t:SetTexture(squid.image)

@@ -22,11 +22,7 @@ Addon = {
 		wellFed = false,
 	},
 
-	settingsCache = {
-		brightness = 50,
-		contrast = 50,
-		gamma = 1.0,
-	}
+	settingsCache = {}
 }
 
 -- Debug category to setting mapping (optimization for Debug function)
@@ -57,9 +53,5 @@ DEFAULT_CHAR_SETTINGS = {
 	cultivation_milestone = 1,
 	cultivation_color = "#FF0000",
 	cultivation_active = true,
-
-	brightness = 50,
-	constrast = 50,
-	gamme = 1.0
 }
 --[[ END DEFAULTS ]] --

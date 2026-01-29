@@ -10,6 +10,33 @@ function GetCultivationMultiplier()
 	return CultivationMultipliers[GetCurrentMilestone()] or 1
 end
 
+-- Rewards: higher cultivation = more benefits beyond decay reduction
+
+--- Hunger/thirst cannot drop below this % (0 at tier 1, +5% per tier, e.g. tier 8 = 35%)
+function GetCultivationFloor()
+	local m = GetCurrentMilestone()
+	return math.max(0, (m - 1) * 5)
+end
+
+--- % per second recovered while resting (not eating/drinking). Scales with tier.
+local RESTING_RECOVERY_BASE = (0.5 / 60) -- 0.5% per minute at tier 1
+function GetCultivationRestingRecoveryPerSecond()
+	local m = GetCurrentMilestone()
+	return RESTING_RECOVERY_BASE * m
+end
+
+--- Multiplier for eating/drinking fill rate (1.0 at tier 1, +5% per tier, e.g. tier 8 = 1.35)
+function GetCultivationFoodEfficiency()
+	local m = GetCurrentMilestone()
+	return 1 + (m - 1) * 0.05
+end
+
+--- Display: decay reduction % compared to tier 1 (e.g. tier 2 = 10%, tier 8 = 80%)
+function GetCultivationDecayReductionPercent()
+	local mult = GetCultivationMultiplier()
+	return math.floor((1 - mult) * 100 + 0.5)
+end
+
 function GetCurrentMilestone()
 	return Addon.cultivationCache.milestone or 1
 end
@@ -106,8 +133,8 @@ function UpdatePlayerCultivation(elapsed)
 		milestone_value = next_value
 
 		Toasts.UI.Toasts.Push({
-			title = "Milestone Reached",
-			text = "You now have an " .. Cultivation_tiers[next] .. " core.",
+			title = "Breakthrough",
+			text = "This one has forged a " .. Cultivation_tiers[next] .. " core. The heavens take notice.",
 			icon = Toasts.UI.Icons.LOOT,
 			progress = 1,
 			duration = 4,
@@ -123,5 +150,4 @@ function UpdatePlayerCultivation(elapsed)
 	end
 
 	SetCharSetting("cultivation_current", cultivation)
-	SetCharSetting("gamma", Clamp((1.2 * cultivation / milestone_value), 1, 1.2))
 end

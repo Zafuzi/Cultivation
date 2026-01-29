@@ -23,28 +23,16 @@ function OpenMeters()
 		end
 	end)
 
-	MetersContainer.isFirstRun = true
-
-	HungerMeter = CreateMeter("Hunger", MetersContainer, ICONS.food, COLORS.HUNGER)
+	HungerMeter = CreateMeter("Five Grains", MetersContainer, ICONS.food, COLORS.HUNGER)
 	HungerMeter:SetPoint("TOPLEFT", MetersContainer, "TOPLEFT", METER_PADDING, -METER_PADDING)
-	HungerMeter:SetScript("OnUpdate", function(self, elapsed)
-		UpdateHungerMeter(elapsed)
-	end)
+	SetupHungerTooltip(HungerMeter)
 
-	ThirstMeter = CreateMeter("Thirst", MetersContainer, ICONS.drink, COLORS.THIRST)
+	ThirstMeter = CreateMeter("Jade Spring", MetersContainer, ICONS.drink, COLORS.THIRST)
 	ThirstMeter:SetPoint("TOPLEFT", HungerMeter, "BOTTOMLEFT", 0, -METER_PADDING)
-	ThirstMeter:SetScript("OnUpdate", function(self, elapsed)
-		UpdateThirstMeter(elapsed)
-	end)
+	SetupThirstTooltip(ThirstMeter)
 
-	CultivationMeter = CreateMeter("Cultivation", MetersContainer, ICONS.cultivation, Cultivation_colors[1])
+	CultivationMeter = CreateMeter("Golden Core", MetersContainer, ICONS.cultivation, Cultivation_colors[1])
 	CultivationMeter:SetPoint("TOPLEFT", ThirstMeter, "BOTTOMLEFT", 0, -METER_PADDING)
-	CultivationMeter:SetScript("OnUpdate", function(self, elapsed)
-		local color = Addon.cultivationCache.color
-		CultivationMeter:UpdateBgColor(color)
-
-		UpdateCultivationMeter(elapsed)
-	end)
 
 	SetupCultivationTooltip(CultivationMeter)
 
@@ -54,17 +42,27 @@ function OpenMeters()
 	MetersContainer:SetHeight((children * METER_HEIGHT) + (children * METER_PADDING) + (METER_PADDING))
 	MetersContainer:Show()
 
-	MetersContainer:SetScript("OnUpdate", function(self)
-		if MetersContainer.isFirstRun then
-			MetersContainer.isFirstRun = false
-		end
-	end)
+	-- One-time initial display; calculations run on simulation tick (Core), animation on scheduler
+	OnAnimationTick(0)
 
-	C_Timer.After(1, function()
-		if IsPlayerCultivating() then
-			Cultivate(true, true)
-		else
-			Cultivate(false, true)
-		end
-	end)
+	Scheduler.RegisterAnimationTick(OnAnimationTick)
+end
+
+-- Chunked animation only: meters + auras. Called by scheduler at ~15 FPS (10 in combat/instance).
+function OnAnimationTick(elapsed)
+	if Addon.cultivationCache then
+		CultivationMeter:UpdateBgColor(Addon.cultivationCache.color)
+	end
+	UpdateHungerMeter(elapsed)
+	UpdateThirstMeter(elapsed)
+	UpdateCultivationMeter(elapsed)
+	if HungerAura and HungerAura.update then
+		HungerAura.update(HungerAura, elapsed)
+	end
+	if ThirstAura and ThirstAura.update then
+		ThirstAura.update(ThirstAura, elapsed)
+	end
+	if CultivationAura and CultivationAura.update then
+		CultivationAura.update(CultivationAura, elapsed)
+	end
 end

@@ -1,5 +1,13 @@
 
 # Changelog
+## [0.4.0]
+### Minor Release
+- **Performance:** Separated calculations from animations. Calculations run on a simulation tick (1s normally, 2.5s in combat/instance); meter and aura animations run at ~15 FPS (~10 in combat/instance). CPU use reduced, especially in combat and instances.
+- **Removed:** Gamma, brightness, and contrast CVar control. Auras handle atmosphere instead.
+- **Balance:** Hunger and thirst in combat now decay from 100% to 0% in ~30 minutes of active combat (was far faster).
+- **Cultivation rewards:** Beyond slower decay, cultivation now grants: a floor so hunger/thirst never drop below a tier-based minimum; resting recovery (slow refill while resting); and improved food/drink efficiency. All scale with cultivation tier.
+- **Theme:** All in-game messaging (meter labels, tooltips, toasts) rewritten in an arrogant, Chinese cultivation-mythology tone. Meters renamed to Five Grains, Jade Spring, and Golden Core; tooltips and notifications use “this one,” dantian, qi, refinement, and breakthrough language.
+
 ## [0.3.1]
 ### Patch 
 - Removed LibStub

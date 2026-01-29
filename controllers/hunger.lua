@@ -1,11 +1,10 @@
 function UpdatePlayerHunger(elapsed)
-	-- load into caches
 	local rate = GetHungerRate()
-	local hunger = Clamp(Addon.hungerCache.current + rate * elapsed, 0, 100)
+	local floor = GetCultivationFloor()
+	local hunger = Clamp(Addon.hungerCache.current + rate * elapsed, floor, 100)
 
 	SetCharSetting("hunger_rate", rate)
 	SetCharSetting("hunger_current", hunger)
-	SetCharSetting("brightness", Clamp(50 - (50 * hunger / 100), 0, 50))
 end
 
 --- @param elapsed number the amount of time elapsed since last frame
@@ -14,10 +13,9 @@ function GetPlayerHunger(elapsed)
 end
 
 function GetHungerRate()
-	-- eating overrides everything
+	-- eating overrides everything; cultivation makes food more effective
 	if Addon.playerCache.eating then
-		-- 20s of eating = full
-		return -(100 / 20)
+		return -(100 / 20) * GetCultivationFoodEfficiency()
 	end
 
 	local tts = Addon.hungerCache.timeToStarveInHours
@@ -44,8 +42,8 @@ function GetHungerRate()
 	end
 
 	if Addon.playerCache.activity == "combat" then
-		-- combat is very demanding
-		rate = tts / 50
+		-- ~30 minutes of active combat to go from 100% to 0%
+		rate = 0.3
 	end
 
 	if not rate then
@@ -53,10 +51,15 @@ function GetHungerRate()
 	end
 
 	if Addon.playerCache.resting then
-		-- 50% reduced decay when resting
-		-- because math works the other way we multiply to get a "slower" rate
 		rate = rate * 2
 	end
 
-	return RateAfterCultivation(rate)
+	rate = RateAfterCultivation(rate)
+
+	-- resting recovery: cultivate to slowly fill hunger while resting (not eating, not combat)
+	if Addon.playerCache.resting and not Addon.playerCache.eating and Addon.playerCache.activity ~= "combat" then
+		rate = rate - GetCultivationRestingRecoveryPerSecond()
+	end
+
+	return rate
 end

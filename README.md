@@ -4,40 +4,38 @@ Condense your core, survive the wilds, master arts, reach the peak.
 
 ![v0.1.0](screenshots/v0.1.0.png)
 
-## Hunger
+Roleplay addon with Chinese cultivation (xianxia) flavour: **Five Grains** (hunger), **Jade Spring** (thirst), and **Golden Core** (cultivation). Meters, tooltips, and notifications use an arrogant, in-world tone.
 
-Slowly drains while doing any activity (even when idle). Combat, running, swimming, flying and even running drain this bar faster. Eat food to recover.
+## Five Grains (Hunger)
 
-## Thirst
+Drains with activity—idle, walking, running, swimming, flying, combat. Combat drains from full to empty in ~30 minutes of active fighting. Eat food to recover. Higher cultivation slows decay, improves food efficiency, adds a floor so you never fully starve, and lets you recover while resting.
 
-Slowly drains while doing any activity (even when idle). Combat, running, swimming, flying and even running drain this bar faster. Drink potions, water, beer, etc... to recover.
+## Jade Spring (Thirst)
 
-## Cultivation
+Same as Five Grains: drains with activity, ~30 minutes in combat from full to empty. Drink to recover. Cultivation rewards apply (slower decay, better drink efficiency, floor, resting recovery).
 
-Passively increases over time (slowly). Split into milestones, reaching the next milestone reduces the rates your hunger and thirst drain.
+## Golden Core (Cultivation)
 
-- Red Core (0%)
-- Orange Core (-10%)
-- Yellow Core (-20%)
-- Green Core (-30%)
-- Blue Core (-40%)
-- Violet Core (-50%)
-- White Core (-60%)
-- Black Core (-80%)
+Passively increases over time. Reaching milestones (cores) reduces hunger/thirst decay and unlocks more rewards:
 
-You can increase your cultivation faster by partaking in combat (3x) or by manually cultivating. 
-Right now this is done by detecting the player riding a vehicle, or by using the console command `/c cultivate`. If you have a better idea for this please let me know.
+- **Red** → **Orange** (-10%) → **Yellow** (-20%) → **Green** (-30%) → **Blue** (-40%) → **Violet** (-50%) → **White** (-60%) → **Black** (-80%) decay reduction
 
-I currently use the `Comfortable Pile of Pelts` toy to simulate active cultivation
+**Cultivation rewards (scaling with tier):** decay reduction, food/drink efficiency, resting recovery (%/min while resting), and a floor so hunger/thirst never drop below a minimum.
+
+Increase cultivation faster by fighting (3×) or by manually cultivating. Use `/c cultivate` or sit on a vehicle to toggle. Many players use the *Comfortable Pile of Pelts* toy for active cultivation.
 
 ## Resting
 
-Provides a 10% boost to drain rates and cultivation
+Slows hunger/thirst decay and grants resting recovery (scales with cultivation). Boosts cultivation rate.
 
 ## Player Campfires
 
-Provide a 10% boost to drain rates, and vastly improves open-world cultivation (from 1x to 4x) while active
+Boost drain rates and open-world cultivation (up to 4× near a fire).
 
 ## Well Fed
 
-Provides a 10% boost to cultivation and reduces hunger / thirst by 90% when active
+Boosts cultivation and greatly reduces hunger/thirst decay when active.
+
+## Performance
+
+Calculations run on a simulation tick (1s normally, 2.5s in combat/instance). Meter and aura animations run at ~15 FPS (~10 in combat/instance) so the addon stays light on CPU.

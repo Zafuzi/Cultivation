@@ -22,13 +22,14 @@ f:SetScript("OnEvent", function(self, nameOfEvent, ...)
 	if nameOfEvent == "ADDON_LOADED" then
 		local addonName = select(1, ...)
 		if addonName == Addon.name then
-			-- first time update
 			local version = C_AddOns.GetAddOnMetadata(ADDON, "Version")
 			Addon.version = version
 			Addon.name = ADDON
 			Addon.isLoaded = true
-			UpdateAddon(0)
+			RefreshCaches()
 			OpenMeters()
+			Scheduler.RegisterSimulationTick(OnSimulationTick)
+			Scheduler.Start()
 		end
 		return
 	end
@@ -63,8 +64,8 @@ hooksecurefunc(WorldMapFrame, "Show", function()
 	if not Addon.playerCache.resting then
 		WorldMapFrame:Hide()
 		Toasts.UI.Toasts.Push({
-			title = "Adventuring",
-			text = "Map is disabled outside of towns",
+			title = "Mortal Ground",
+			text = "The map is sealed beyond rest. Only the refined may wander with clarity.",
 			icon = Toasts.UI.Icons.ERROR,
 			progress = 1,
 			duration = 4,
@@ -81,8 +82,8 @@ hooksecurefunc(Minimap, "Show", function()
 	if not Addon.playerCache.resting then
 		Minimap:Hide()
 		Toasts.UI.Toasts.Push({
-			title = "Adventuring",
-			text = "Minimap is disabled outside of towns",
+			title = "Mortal Ground",
+			text = "The minimap is sealed beyond rest. This one must refine before venturing blind.",
 			icon = Toasts.UI.Icons.ERROR,
 			progress = 1,
 			duration = 4,
@@ -97,27 +98,21 @@ end)
 
 f:SetPropagateKeyboardInput(true)
 
-local t = 0
-UPDATE_DELAY = 1 / 60
-function UpdateAddon(elapsed)
+-- Event-driven cache refresh: only run when simulation tick fires (or on first load).
+-- Calculations (hunger/thirst/cultivation) run only on simulation tick, not every frame.
+function RefreshCaches()
 	Addon.playerCache.name = GetPlayerProp("name")
 	Addon.playerCache.level = GetPlayerProp("level")
 	Addon.playerCache.health = GetPlayerProp("health")
 	Addon.playerCache.speed = GetPlayerProp("speed")
 
-	Addon.playerCache.resting = IsResting()
+	Addon.playerCache.resting = IsResting() or IsPlayerCamping()
 	Addon.playerCache.eating = IsPlayerEating()
 	Addon.playerCache.activity = GetMovementState()
 	Addon.playerCache.cultivating = IsPlayerCultivating()
 	Addon.playerCache.camping = IsPlayerCamping()
 	Addon.playerCache.drinking = IsPlayerDrinking()
 	Addon.playerCache.wellFed = IsPlayerWellFed()
-
-	Addon.settingsCache = {
-		brightness = GetCharSetting("brightness"),
-		contrast = GetCharSetting("contrast"),
-		gamma = GetCharSetting("gamma")
-	}
 
 	Addon.hungerCache = {
 		current = GetCharSetting("hunger_current"),
@@ -139,32 +134,21 @@ function UpdateAddon(elapsed)
 		active = GetCharSetting("cultivation_active"),
 	}
 
-	-- TODO: move this into a onetime event, not here in the update!
 	if not Addon.playerCache.resting then
 		if WorldMapFrame:IsShown() or Minimap:IsShown() then
 			HideUIPanel(WorldMapFrame)
 			HideUIPanel(Minimap)
 		end
 	end
+end
 
+-- Called by scheduler at simulation interval (1s normal, 2.5s in combat/instance).
+function OnSimulationTick(elapsed)
+	RefreshCaches()
 	UpdatePlayerHunger(elapsed)
 	UpdatePlayerThirst(elapsed)
 	UpdatePlayerCultivation(elapsed)
 end
-
-f:SetScript("OnUpdate", function(self, elapsed)
-	if Addon.isLoaded and t >= UPDATE_DELAY then
-		UpdateAddon(elapsed)
-		-- update CVars
-		SetCVar("RenderScale", Addon.settingsCache.renderScale)
-		SetCVar("Brightness", Addon.settingsCache.brightness)
-		SetCVar("Contrast", Addon.settingsCache.contrast)
-		SetCVar("Gamma", Addon.settingsCache.gamma)
-		t = 0
-	end
-
-	t = t + elapsed
-end)
 
 SLASH_CULTIVATION1 = "/cultivation"
 SLASH_CULTIVATION2 = "/c"

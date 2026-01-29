@@ -47,8 +47,7 @@ function UpdateCultivationMeter(elapsed)
 	-- Update bar value (inverted: full bar = 0% cultivation, empty bar = 100% cultivation)
 	CultivationMeter.bar:SetValue(displayValue)
 
-	-- Apply text based on hideVialText setting
-	CultivationMeter.name:SetText("Cultivation")
+	CultivationMeter.name:SetText("Golden Core")
 
 	if CultivationMeter.icon then
 		local rot = GetCultivationRate()
@@ -67,12 +66,19 @@ function SetupCultivationTooltip(self)
 		local color = NormalizedColor(Cultivation_colors[milestone])
 		local nextMilestone = GetNextMilestone()
 		local nextColor = NormalizedColor(Cultivation_colors[nextMilestone])
-		GameTooltip:AddLine("Cultivation", unpack(NormalizedColor(COLORS.CULTIVATION)))
-		GameTooltip:AddLine("Core: " .. Dump(Cultivation_tiers[milestone]), unpack(color))
-		GameTooltip:AddLine("Next: " .. Dump(Cultivation_tiers[nextMilestone]), unpack(nextColor))
-		GameTooltip:AddLine("Current: " .. Dump(cultivation), 1, 1, 1)
-		GameTooltip:AddLine("Reduction: " .. Dump(GetCultivationMultiplier()), 1, 1, 1)
-		GameTooltip:AddLine("Rate: " .. Dump(GetCultivationRate()), 1, 1, 1)
+		GameTooltip:AddLine("Golden Core", unpack(NormalizedColor(COLORS.CULTIVATION)))
+		GameTooltip:AddLine("This one's dantian—the seed of ascension.", 0.7, 0.65, 0.5)
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine("Current realm: " .. Dump(Cultivation_tiers[milestone]) .. " core", unpack(color))
+		GameTooltip:AddLine("Next breakthrough: " .. Dump(Cultivation_tiers[nextMilestone]), unpack(nextColor))
+		GameTooltip:AddLine("Qi accumulated: " .. Dump(cultivation) .. " / " .. Dump(milestone_value), 1, 1, 1)
+		GameTooltip:AddLine("Refinement rate: " .. Dump(GetCultivationRate()), 1, 1, 1)
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine("Blessings of this one's path:", 0.6, 0.8, 1)
+		GameTooltip:AddLine("  The mortal coil weakens—decay " .. Dump(GetCultivationDecayReductionPercent()) .. "% subdued.", 0.5, 0.9, 0.5)
+		GameTooltip:AddLine("  Five Grains and Jade Spring yield +" .. Dump(math.floor((GetCultivationFoodEfficiency() - 1) * 100)) .. "% when consumed.", 0.5, 0.9, 0.5)
+		GameTooltip:AddLine("  In meditation, this vessel restores " .. Dump(string.format("%.1f", GetCultivationRestingRecoveryPerSecond() * 60)) .. "% per minute.", 0.5, 0.9, 0.5)
+		GameTooltip:AddLine("  The unrefined may starve—this one shall not fall below " .. Dump(GetCultivationFloor()) .. "%.", 0.5, 0.9, 0.5)
 	end
 end
 
@@ -125,11 +131,10 @@ CultivationAura:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", 1000, -500)
 CultivationAura:Hide()
 
 CultivationAura.doShow = function(self, silent)
-	print(Dump(Toasts.UI.Toasts))
 	if not silent then
 		Toasts.UI.Toasts.Push({
-			title = "Cultivating",
-			text = "Your cultivation rate has increased",
+			title = "Qi Rises",
+			text = "This one's refinement quickens. The path opens.",
 			icon = Toasts.UI.Icons.INFO,
 			progress = 1,
 			duration = 4,
@@ -147,8 +152,8 @@ end
 CultivationAura.doHide = function(self, silent)
 	if not silent then
 		Toasts.UI.Toasts.Push({
-			title = "Cultivation Fades",
-			text = "Your cultivation rate has decreased",
+			title = "Core Dormant",
+			text = "This one has ceased refinement. The dantian rests.",
 			icon = Toasts.UI.Icons.INFO,
 			progress = 1,
 			duration = 4,

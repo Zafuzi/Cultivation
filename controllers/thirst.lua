@@ -3,9 +3,9 @@ function UpdatePlayerThirst(elapsed)
 	local rate = GetThirstRate()
 	SetCharSetting("thirst_rate", rate)
 
-	local thirst = Clamp(Addon.thirstCache.current + rate * elapsed, 0, 100)
+	local floor = GetCultivationFloor()
+	local thirst = Clamp(Addon.thirstCache.current + rate * elapsed, floor, 100)
 	SetCharSetting("thirst_current", thirst)
-	SetCharSetting("contrast", Clamp(50 - (50 * thirst / 100), 0, 50))
 end
 
 --- @param elapsed number the amount of time elapsed since last frame
@@ -14,13 +14,12 @@ function GetPlayerThirst(elapsed)
 end
 
 function GetThirstRate()
-	-- drinking overrides everything
+	-- drinking overrides everything; cultivation makes drink more effective
 	if Addon.playerCache.activity == "idle" and Addon.playerCache.drinking then
-		-- 20s of drinking = full
-		return -(100 / 16)
+		return -(100 / 16) * GetCultivationFoodEfficiency()
 	end
 
-	local tts = Addon.thirstCache.thirst_timeToDehydrationInHours or ONE_THIRD
+	local tts = Addon.thirstCache.timeToDehydrationInHours or ONE_THIRD
 	local rate = tts
 
 	if Addon.playerCache.activity == "idle" then
@@ -44,8 +43,8 @@ function GetThirstRate()
 	end
 
 	if Addon.playerCache.activity == "combat" then
-		-- combat is very demanding
-		rate = tts / 16
+		-- ~30 minutes of active combat to go from 100% to 0%
+		rate = 0.3
 	end
 
 	if not rate then
@@ -53,10 +52,15 @@ function GetThirstRate()
 	end
 
 	if Addon.playerCache.resting then
-		-- 50% reduced decay when resting
-		-- because math works the other way we multiply to get a "slower" rate
 		rate = rate * 2
 	end
 
-	return RateAfterCultivation(rate)
+	rate = RateAfterCultivation(rate)
+
+	-- resting recovery: cultivate to slowly fill thirst while resting (not drinking, not combat)
+	if Addon.playerCache.resting and not Addon.playerCache.drinking and Addon.playerCache.activity ~= "combat" then
+		rate = rate - GetCultivationRestingRecoveryPerSecond()
+	end
+
+	return rate
 end

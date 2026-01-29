@@ -83,7 +83,12 @@ DebugPanel:SetScript("OnShow", function(self)
 	PlaySound(808)
 end)
 
+local debugPanelAccum = 0
+local DEBUG_PANEL_UPDATE_INTERVAL = 0.25  -- ~4 FPS when visible to reduce CPU
 DebugPanel:SetScript("OnUpdate", function(self, elapsed)
+	debugPanelAccum = debugPanelAccum + elapsed
+	if debugPanelAccum < DEBUG_PANEL_UPDATE_INTERVAL then return end
+	debugPanelAccum = 0
 	bodyContent = ""
 
 	self:debug_addon()
