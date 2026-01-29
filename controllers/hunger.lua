@@ -1,7 +1,8 @@
 function UpdatePlayerHunger(elapsed)
 	local rate = GetHungerRate()
 	local floor = GetCultivationFloor()
-	local hunger = Clamp(Addon.hungerCache.current + rate * elapsed, floor, 100)
+	-- Floor = min satiation %; hunger 0 = full, 100 = empty, so max hunger = 100 - floor (never worse than floor% full).
+	local hunger = Clamp(Addon.hungerCache.current + rate * elapsed, 0, 100 - floor)
 
 	SetCharSetting("hunger_rate", rate)
 	SetCharSetting("hunger_current", hunger)

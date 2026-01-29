@@ -1,9 +1,13 @@
 local ADDON, _Version = ...
 local f = CreateFrame("Frame", "Cultivation")
+local combatSummaryPendingAt = nil -- GetTime() when we're allowed to show (10s after last combat end)
+local combatSummaryTicker = nil    -- single ticker; cancelable so we only ever have one
 
 RegisterdEvents = {
 	{ name = "PLAYER_ENTERING_WORLD", enabled = true },
 	{ name = "ADDON_LOADED",          enabled = true },
+	{ name = "PLAYER_LOGOUT",         enabled = true },
+	{ name = "PLAYER_REGEN_ENABLED",  enabled = true },
 	{ name = "UNIT_ENTERED_VEHICLE",  enabled = true },
 	{ name = "UNIT_EXITED_VEHICLE",   enabled = true },
 	{ name = "PLAYER_STOPPED_MOVING", enabled = true },
@@ -27,9 +31,65 @@ f:SetScript("OnEvent", function(self, nameOfEvent, ...)
 			Addon.name = ADDON
 			Addon.isLoaded = true
 			RefreshCaches()
+			ApplyCultivationCatchUp()
 			OpenMeters()
 			Scheduler.RegisterSimulationTick(OnSimulationTick)
 			Scheduler.Start()
+			-- Restore cultivation aura/state after reload (caches and UI now exist)
+			C_Timer.After(0.5, function()
+				if GetCharSetting("cultivation_active") then
+					Cultivate(true, true)
+				else
+					Cultivate(false, true)
+				end
+			end)
+		end
+		return
+	end
+
+	if nameOfEvent == "PLAYER_ENTERING_WORLD" then
+		return
+	end
+
+	if nameOfEvent == "PLAYER_LOGOUT" then
+		SetCharSetting("cultivation_logout_time", time())
+		return
+	end
+
+	if nameOfEvent == "PLAYER_REGEN_ENABLED" then
+		OnCombatEnd()
+		-- Push show time to 10s from now; multiple combat-ends combine into one window.
+		combatSummaryPendingAt = GetTime() + 10
+		if not combatSummaryTicker then
+			combatSummaryTicker = C_Timer.NewTicker(1, function()
+				if not combatSummaryPendingAt or GetTime() < combatSummaryPendingAt then
+					return
+				end
+				if UnitAffectingCombat("player") then
+					-- Still in combat; never show. Push back 5s and try again.
+					combatSummaryPendingAt = GetTime() + 5
+					return
+				end
+				combatSummaryPendingAt = nil
+				local ticker = combatSummaryTicker
+				combatSummaryTicker = nil
+				if ticker then ticker:Cancel() end
+				local gain = GetAndClearCombatCultivationGain()
+				if gain and gain > 0 then
+					local display = WithCommas(string.format("%.0f", gain))
+					Toasts.UI.Toasts.Push({
+						title = "Battle Refinement",
+						text = "Qi refined in combat: " .. display,
+						icon = Toasts.UI.Icons.LOOT,
+						progress = 1,
+						duration = 30,
+						onClick = function()
+							print("Toast clicked")
+						end,
+					})
+					Toasts.UI.Toasts.SetAnchor("TOP", 0, -20)
+				end
+			end)
 		end
 		return
 	end

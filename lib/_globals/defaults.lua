@@ -53,5 +53,6 @@ DEFAULT_CHAR_SETTINGS = {
 	cultivation_milestone = 1,
 	cultivation_color = "#FF0000",
 	cultivation_active = true,
+	cultivation_logout_time = nil,
 }
 --[[ END DEFAULTS ]] --

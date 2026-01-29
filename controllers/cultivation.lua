@@ -5,6 +5,11 @@ Cultivation_tiers = { "Red", "Orange", "Yellow", "Green", "Blue", "Violet", "Whi
 CultivationMultipliers = { 1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.2 }
 
 local currentMilestone = 1
+-- Combat summary: accumulated cultivation this combat (our own counter; never read secret API values for display).
+-- COMBAT_LOG_EVENT is protected; we use time-in-combat (rate * elapsed) only.
+local cultivationGainedThisCombat = 0
+local combatTotalDamage = 0
+local combatDamagePerTarget = {}
 
 function GetCultivationMultiplier()
 	return CultivationMultipliers[GetCurrentMilestone()] or 1
@@ -62,6 +67,117 @@ function GetPlayerCultivation()
 	return Addon.cultivationCache.current
 end
 
+-- Offline catch-up: if player was cultivating at logout, grant 80% of resting cultivation rate (like rested XP).
+local CATCH_UP_RATE = 5 * 0.8         -- resting cultivating rate * 80%
+local CATCH_UP_CAP_SECONDS = 2 * 3600 -- max 2 hours of catch-up
+
+function ApplyCultivationCatchUp()
+	if not GetCharSetting("cultivation_active") then return end
+	local logoutTime = GetCharSetting("cultivation_logout_time")
+	if not logoutTime or logoutTime <= 0 then return end
+
+	local now = time()
+	local elapsed = math.max(0, now - logoutTime)
+	elapsed = math.min(elapsed, CATCH_UP_CAP_SECONDS)
+	SetCharSetting("cultivation_logout_time", nil)
+
+	if elapsed <= 0 then return end
+
+	local catchUp = elapsed * CATCH_UP_RATE
+	local current = GetCharSetting("cultivation_current") or 0
+	local milestone = GetCurrentMilestone()
+	if milestone >= #CultivationMilestones then return end
+
+	local nextTier = GetNextMilestone()
+	local nextValue = GetMilestoneValue(nextTier)
+	local milestoneValue = GetMilestoneValue(milestone)
+
+	while catchUp > 0 and milestone < #CultivationMilestones do
+		local space = nextValue - current
+		local add = math.min(catchUp, space)
+		current = current + add
+		catchUp = catchUp - add
+
+		if current >= milestoneValue then
+			milestone = nextTier
+			SetCharSetting("cultivation_milestone", milestone)
+			SetCharSetting("cultivation_color", Cultivation_colors[milestone])
+			Addon.cultivationCache.milestone = milestone
+			MilestoneReached(milestone)
+			AnnounceMilestoneToCommunity(milestone)
+			nextTier = milestone < #CultivationMilestones and (milestone + 1) or milestone
+			nextValue = GetMilestoneValue(nextTier)
+			milestoneValue = GetMilestoneValue(milestone)
+		end
+	end
+
+	SetCharSetting("cultivation_current", current)
+	Addon.cultivationCache.current = current
+	Addon.cultivationCache.milestone = milestone
+end
+
+-- Steady Mountain Sect = community channel 5
+local COMMUNITY_CHANNEL_NAME = "Steady Mountain Sect"
+local COMMUNITY_CHANNEL_ID = 5
+
+function AnnounceMilestoneToCommunity(milestone)
+	local channelId = GetChannelName(COMMUNITY_CHANNEL_NAME)
+	if not channelId then
+		channelId = COMMUNITY_CHANNEL_ID
+	end
+	local msg = "This one has forged a " .. (Cultivation_tiers[milestone] or "?") .. " core. The heavens take notice."
+	pcall(SendChatMessage, msg, "CHANNEL", nil, channelId)
+end
+
+--- Returns cultivation gained this combat and clears the counter. Safe to display (our own accumulated number).
+function GetAndClearCombatCultivationGain()
+	local gain = cultivationGainedThisCombat
+	cultivationGainedThisCombat = 0
+	return gain
+end
+
+--- Add lump qi from combat (kills or damage); handles milestones and cache. Never passes secret values.
+function AddCultivationFromCombat(amount)
+	if not amount or amount <= 0 then return end
+	if not Addon or not Addon.cultivationCache then return end
+	local milestone = GetCurrentMilestone()
+	if milestone >= #CultivationMilestones then return end
+
+	local current = GetCharSetting("cultivation_current") or 0
+	local nextTier = GetNextMilestone()
+	local nextValue = GetMilestoneValue(nextTier)
+	local milestoneValue = GetMilestoneValue(milestone)
+
+	local remaining = amount
+	while remaining > 0 and milestone < #CultivationMilestones do
+		local space = nextValue - current
+		local add = math.min(remaining, space)
+		current = current + add
+		remaining = remaining - add
+
+		if current >= milestoneValue then
+			milestone = nextTier
+			SetCharSetting("cultivation_milestone", milestone)
+			SetCharSetting("cultivation_color", Cultivation_colors[milestone])
+			if Addon.cultivationCache then Addon.cultivationCache.milestone = milestone end
+			MilestoneReached(milestone)
+			AnnounceMilestoneToCommunity(milestone)
+			nextTier = milestone < #CultivationMilestones and (milestone + 1) or milestone
+			nextValue = GetMilestoneValue(nextTier)
+			milestoneValue = GetMilestoneValue(milestone)
+		end
+	end
+
+	SetCharSetting("cultivation_current", current)
+	if Addon.cultivationCache then Addon.cultivationCache.current = current end
+end
+
+--- Clear combat tracker state at combat end (damage/kill tracking removed; COMBAT_LOG_EVENT is protected).
+function OnCombatEnd()
+	combatTotalDamage = 0
+	combatDamagePerTarget = {}
+end
+
 function GetCultivationRate()
 	local rate = 1
 
@@ -101,6 +217,11 @@ function GetCultivationRate()
 		rate = rate * 1.1
 	end
 
+	-- companion (non-combat pet) grants a slight cultivation boost
+	if IsCompanionActive() then
+		rate = rate * 1.05
+	end
+
 	return rate * (Addon.playerCache.wellFed and 1.1 or 1)
 end
 
@@ -120,6 +241,11 @@ function UpdatePlayerCultivation(elapsed)
 	end
 
 	local rate = GetCultivationRate()
+	-- Combat qi from time in combat (COMBAT_LOG_EVENT is protected so we don't use damage/kills).
+	if Addon.playerCache.activity == "combat" then
+		cultivationGainedThisCombat = cultivationGainedThisCombat + (rate * elapsed)
+	end
+
 	local current = Addon.cultivationCache.current
 	local milestone_value = GetMilestoneValue(currentMilestone)
 	local next = GetNextMilestone()
@@ -147,6 +273,7 @@ function UpdatePlayerCultivation(elapsed)
 
 		SetCharSetting("cultivation_milestone", currentMilestone)
 		MilestoneReached(next)
+		AnnounceMilestoneToCommunity(next)
 	end
 
 	SetCharSetting("cultivation_current", cultivation)

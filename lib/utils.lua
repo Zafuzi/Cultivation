@@ -82,6 +82,15 @@ function IsPlayerCultivating()
 	return Addon.cultivationCache and Addon.cultivationCache.active
 end
 
+--- True if player has a non-combat pet / companion summoned (Retail: C_PetJournal.GetSummonedPetGUID).
+function IsCompanionActive()
+	if C_PetJournal and C_PetJournal.GetSummonedPetGUID then
+		local guid = C_PetJournal.GetSummonedPetGUID()
+		return guid and guid ~= ""
+	end
+	return false
+end
+
 ------------------------------------------------------------
 -- Retail-safe aura helpers (NO UnitBuff)
 ------------------------------------------------------------

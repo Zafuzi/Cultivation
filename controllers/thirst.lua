@@ -4,7 +4,8 @@ function UpdatePlayerThirst(elapsed)
 	SetCharSetting("thirst_rate", rate)
 
 	local floor = GetCultivationFloor()
-	local thirst = Clamp(Addon.thirstCache.current + rate * elapsed, floor, 100)
+	-- Floor = min satiation %; thirst 0 = full, 100 = empty, so max thirst = 100 - floor (never worse than floor% full).
+	local thirst = Clamp(Addon.thirstCache.current + rate * elapsed, 0, 100 - floor)
 	SetCharSetting("thirst_current", thirst)
 end
 
